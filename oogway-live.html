@@ -2797,4 +2797,217 @@ function Analysis({ ticker, onBack, onPick }) {
                 <span className="selector-ticker">{c.ticker}</span>
                 <span className="selector-name">{c.name}</span>
               </button>
-    
+            ))}
+          </div>
+        </div>
+
+        <div className="analysis-foot">
+          <button className="btn btn-ghost" onClick={onBack}>
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M13 8H3M7 4L3 8l4 4" /></svg>
+            Back to home
+          </button>
+          <span className="mono" style={{ fontSize: 11, color: "var(--ink-3)", letterSpacing: "0.04em" }}>
+            For informational purposes only. Not financial advice.
+          </span>
+        </div>
+      </div>
+
+      <Footer />
+    </div>
+  );
+}
+
+Object.assign(window, { Analysis });
+
+  </script>
+
+  <script type="text/babel">
+/* === Oogway main app === */
+/* Globals: React, ReactDOM, Landing, Analysis, useTweaks, TweaksPanel, TweakRadio, TweakColor, TweakSection */
+
+const { useState: useStateApp, useEffect: useEffectApp } = React;
+
+const PALETTES = {
+  Ink: {
+    "--bg": "#F6F4EF",
+    "--bg-elev": "#FFFFFF",
+    "--bg-deep": "#0B0B0C",
+    "--ink": "#0B0B0C",
+    "--ink-2": "#2A2A2D",
+    "--ink-3": "#5C5C61",
+    "--ink-4": "#8C8C93",
+    "--rule": "rgba(11,11,12,0.08)",
+    "--rule-2": "rgba(11,11,12,0.14)",
+    "--accent": "#0E7B5E",
+    "--accent-soft": "rgba(14,123,94,0.10)",
+    "--neg": "#B6422A",
+    "--on-dark": "#F4F1EA",
+    "--on-dark-2": "#A8A59D",
+  },
+  Frost: {
+    "--bg": "#F3F4F6",
+    "--bg-elev": "#FFFFFF",
+    "--bg-deep": "#0B1228",
+    "--ink": "#0B1228",
+    "--ink-2": "#1F263C",
+    "--ink-3": "#5A6178",
+    "--ink-4": "#8A91A4",
+    "--rule": "rgba(11,18,40,0.08)",
+    "--rule-2": "rgba(11,18,40,0.14)",
+    "--accent": "#2A44E0",
+    "--accent-soft": "rgba(42,68,224,0.10)",
+    "--neg": "#C53636",
+    "--on-dark": "#F0F2F8",
+    "--on-dark-2": "#9CA3B5",
+  },
+  Paper: {
+    "--bg": "#F0EBE0",
+    "--bg-elev": "#FAF6EC",
+    "--bg-deep": "#181613",
+    "--ink": "#181613",
+    "--ink-2": "#33302A",
+    "--ink-3": "#6A6358",
+    "--ink-4": "#94897A",
+    "--rule": "rgba(24,22,19,0.10)",
+    "--rule-2": "rgba(24,22,19,0.16)",
+    "--accent": "#B4471D",
+    "--accent-soft": "rgba(180,71,29,0.10)",
+    "--neg": "#9A3015",
+    "--on-dark": "#F0EBE0",
+    "--on-dark-2": "#A39A88",
+  },
+  Carbon: {
+    "--bg": "#0F0F10",
+    "--bg-elev": "#181819",
+    "--bg-deep": "#050505",
+    "--ink": "#F2EFE8",
+    "--ink-2": "#D6D3CC",
+    "--ink-3": "#8B8880",
+    "--ink-4": "#5E5C56",
+    "--rule": "rgba(242,239,232,0.08)",
+    "--rule-2": "rgba(242,239,232,0.14)",
+    "--accent": "#E0A340",
+    "--accent-soft": "rgba(224,163,64,0.14)",
+    "--neg": "#D26B4A",
+    "--on-dark": "#F2EFE8",
+    "--on-dark-2": "#8B8880",
+  },
+};
+
+function applyPalette(name) {
+  const p = PALETTES[name] || PALETTES.Ink;
+  const root = document.documentElement;
+  Object.entries(p).forEach(([k, v]) => root.style.setProperty(k, v));
+}
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "palette": "Carbon",
+  "heroVariant": "list",
+  "density": "compact",
+  "heading": "Geist"
+}/*EDITMODE-END*/;
+
+const HEADING_FONTS = {
+  "Geist":              { stack: "'Geist', ui-sans-serif, system-ui, sans-serif", tracking: "-0.035em" },
+  "Bricolage Grotesque":{ stack: "'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif", tracking: "-0.03em" },
+  "Space Grotesk":      { stack: "'Space Grotesk', ui-sans-serif, system-ui, sans-serif", tracking: "-0.025em" },
+  "Instrument Sans":    { stack: "'Instrument Sans', ui-sans-serif, system-ui, sans-serif", tracking: "-0.022em" },
+  "Funnel Display":     { stack: "'Funnel Display', ui-sans-serif, system-ui, sans-serif", tracking: "-0.03em" },
+};
+
+function applyHeading(name) {
+  const f = HEADING_FONTS[name] || HEADING_FONTS["Geist"];
+  document.documentElement.style.setProperty("--font-display", f.stack);
+  document.documentElement.style.setProperty("--display-track", f.tracking);
+}
+
+function App() {
+  const [view, setView] = useStateApp("home"); // "home" | "analysis"
+  const [selected, setSelected] = useStateApp("PSO");
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  useEffectApp(() => { applyPalette(tweaks.palette); }, [tweaks.palette]);
+  useEffectApp(() => { applyHeading(tweaks.heading); }, [tweaks.heading]);
+  useEffectApp(() => {
+    document.documentElement.style.setProperty("--section-y",
+      tweaks.density === "compact" ? "clamp(56px, 7vw, 96px)" : "clamp(72px, 9vw, 128px)");
+  }, [tweaks.density]);
+
+  const openAnalysis = (t) => {
+    if (t) setSelected(t);
+    setView("analysis");
+  };
+  const goHome = () => setView("home");
+
+  return (
+    <>
+      {view === "home" ? (
+        <Landing
+          selected={selected}
+          setSelected={setSelected}
+          onAnalyse={() => openAnalysis()}
+          onPick={openAnalysis}
+          onHome={goHome}
+          heroVariant={tweaks.heroVariant}
+        />
+      ) : (
+        <Analysis ticker={selected} onBack={goHome} onPick={openAnalysis} />
+      )}
+
+      <TweaksPanel>
+        <TweakSection label="Palette" />
+        <TweakSelect
+          label="Theme"
+          value={tweaks.palette}
+          onChange={(v) => setTweak("palette", v)}
+          options={[
+            { value: "Ink",    label: "Ink · cream + emerald" },
+            { value: "Frost",  label: "Frost · white + cobalt" },
+            { value: "Paper",  label: "Paper · bone + terracotta" },
+            { value: "Carbon", label: "Carbon · dark + amber" },
+          ]}
+        />
+
+        <TweakSection label="Typography" />
+        <TweakSelect
+          label="Heading font"
+          value={tweaks.heading}
+          onChange={(v) => setTweak("heading", v)}
+          options={[
+            { value: "Geist",               label: "Geist · neutral geometric" },
+            { value: "Bricolage Grotesque", label: "Bricolage · warm display" },
+            { value: "Space Grotesk",       label: "Space Grotesk · technical" },
+            { value: "Instrument Sans",     label: "Instrument · refined" },
+            { value: "Funnel Display",      label: "Funnel · condensed editorial" },
+          ]}
+        />
+
+        <TweakSection label="Layout" />
+        <TweakRadio
+          label="Hero selector"
+          value={tweaks.heroVariant}
+          onChange={(v) => setTweak("heroVariant", v)}
+          options={[
+            { value: "dropdown", label: "Dropdown" },
+            { value: "list", label: "List" },
+          ]}
+        />
+        <TweakRadio
+          label="Density"
+          value={tweaks.density}
+          onChange={(v) => setTweak("density", v)}
+          options={[
+            { value: "comfortable", label: "Comfortable" },
+            { value: "compact", label: "Compact" },
+          ]}
+        />
+      </TweaksPanel>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+  </script>
+</body>
+</html>
