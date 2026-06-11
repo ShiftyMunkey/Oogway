@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.env
+
+# SQLite (local dev only)
+*.db
+
+# Archives & docs (not part of the deployable app)
+*.zip
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db

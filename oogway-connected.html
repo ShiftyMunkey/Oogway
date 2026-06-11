@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Oogway — PSX Financial Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f7f5f2;--bg2:#f0ede8;--card:#ffffff;
+  --border:#e8e4de;--border2:#d8d3cc;
+  --text:#1a1714;--text2:#6b6560;--text3:#a8a39d;
+  --green:#3d7a5f;--green-bg:#edf5f1;--green-border:#b8d9cb;
+  --amber:#8a6a2e;--amber-bg:#faf3e8;--amber-border:#dfc98a;
+  --red:#8a3a2e;--red-bg:#faf0ee;--red-border:#dfa89d;
+  --blue:#2e5a8a;--blue-bg:#eef3fa;--blue-border:#a8c0d8;
+  --serif:'Playfair Display',serif;--sans:'Geist',sans-serif;--mono:'Geist Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:400;line-height:1.6;overflow-x:hidden;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(247,245,242,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer;}
+.nav-logo-mark{width:30px;height:30px;border-radius:7px;background:var(--text);display:flex;align-items:center;justify-content:center;}
+.nav-logo-mark svg{width:16px;height:16px;}
+.nav-logo-text{font-family:var(--serif);font-size:18px;color:var(--text);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{font-size:13px;font-weight:500;color:var(--text2);text-decoration:none;transition:color .15s;}
+.nav-links a:hover{color:var(--text);}
+.nav-right{display:flex;gap:10px;align-items:center;}
+.api-status{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--text3);padding:5px 12px;border-radius:99px;background:var(--bg2);border:1px solid var(--border);}
+.api-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);}
+.api-dot.online{background:var(--green);animation:pulse 2s infinite;}
+.api-dot.offline{background:var(--red);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-nav-fill{font-family:var(--sans);font-size:12px;font-weight:600;color:#fff;background:var(--text);border:1px solid var(--text);padding:7px 16px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.btn-nav-fill:hover{background:#2d2a27;}
+
+.ticker-wrap{background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;height:34px;display:flex;align-items:center;margin-top:64px;}
+.ticker-track{display:flex;animation:ticker 35s linear infinite;white-space:nowrap;}
+.tick-item{display:flex;align-items:center;gap:16px;padding:0 28px;border-right:1px solid var(--border);font-family:var(--mono);font-size:10px;}
+.tick-sym{color:var(--text2);}.tick-val{color:var(--text);}
+.tick-up{color:var(--green);}.tick-dn{color:var(--red);}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* VIEWS */
+#view-home{display:block;}
+#view-loading{display:none;}
+#view-results{display:none;}
+
+/* HOME */
+.hero{max-width:1200px;margin:0 auto;padding:80px 48px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:80px;align-items:center;min-height:calc(100vh - 98px);}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1.5px;background:var(--green-bg);border:1px solid var(--green-border);padding:5px 14px;border-radius:99px;margin-bottom:28px;}
+.hero-eyebrow span{width:5px;height:5px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+.hero h1{font-family:var(--serif);font-size:clamp(40px,5vw,66px);font-weight:700;line-height:1.06;letter-spacing:-1px;margin-bottom:20px;}
+.hero h1 em{font-style:italic;color:var(--green);}
+.hero-sub{font-size:16px;color:var(--text2);max-width:460px;line-height:1.75;margin-bottom:36px;}
+.hero-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.btn-primary{font-family:var(--sans);font-size:13px;font-weight:600;color:#fff;background:var(--text);border:1px solid var(--text);padding:12px 26px;border-radius:8px;cursor:pointer;transition:all .15s;}
+.btn-primary:hover{background:#2d2a27;}
+.btn-secondary{font-family:var(--sans);font-size:13px;color:var(--text2);background:none;border:1px solid var(--border2);padding:12px 26px;border-radius:8px;cursor:pointer;transition:all .15s;}
+.btn-secondary:hover{border-color:var(--text3);color:var(--text);}
+
+.search-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.04);}
+.sc-label{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.5px;margin-bottom:10px;}
+.sc-select-wrap{position:relative;margin-bottom:14px;}
+.sc-select-wrap select{width:100%;appearance:none;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:11px 40px 11px 14px;font-family:var(--sans);font-size:13px;color:var(--text);cursor:pointer;outline:none;transition:border-color .15s;}
+.sc-select-wrap select:focus{border-color:var(--text3);}
+.sc-select-wrap::after{content:'';position:absolute;right:14px;top:50%;transform:translateY(-50%);width:10px;height:6px;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236b6560' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;pointer-events:none;}
+.sc-btn{width:100%;font-family:var(--sans);font-size:13px;font-weight:600;color:#fff;background:var(--text);border:none;padding:13px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:16px;}
+.sc-btn:hover{background:#2d2a27;}
+.sc-note{font-size:11px;color:var(--text3);font-family:var(--mono);text-align:center;}
+
+/* STATS */
+.stats-band{background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;}
+.stat-item{flex:1;padding:28px 40px;border-right:1px solid var(--border);text-align:center;}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:var(--serif);font-size:34px;font-weight:700;color:var(--text);display:block;margin-bottom:3px;letter-spacing:-1px;}
+.stat-lbl{font-size:12px;color:var(--text2);font-weight:500;}
+
+/* LOADING */
+#view-loading{background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px;}
+.loading-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;max-width:480px;width:100%;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.04);}
+.loading-logo{font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:6px;}
+.loading-sub{font-size:13px;color:var(--text2);margin-bottom:28px;}
+.loading-steps{display:flex;flex-direction:column;gap:12px;text-align:left;margin-bottom:24px;}
+.lstep{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text3);transition:color .3s;}
+.lstep.active{color:var(--text);}
+.lstep.done{color:var(--green);}
+.lstep-icon{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s;}
+.lstep.active .lstep-icon{border-color:var(--amber);background:var(--amber-bg);}
+.lstep.done .lstep-icon{border-color:var(--green);background:var(--green-bg);}
+.lstep-spinner{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--amber);border-top-color:transparent;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lstep-check{font-size:10px;color:var(--green);}
+.loading-bar-track{height:3px;background:var(--bg2);border-radius:99px;overflow:hidden;}
+.loading-bar-fill{height:100%;background:var(--green);border-radius:99px;width:0%;transition:width .4s ease;}
+
+/* RESULTS */
+#view-results{background:var(--bg);min-height:100vh;}
+.back-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 48px;display:flex;align-items:center;justify-content:space-between;}
+.back-btn{font-family:var(--sans);font-size:13px;color:var(--text2);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;transition:color .15s;padding:0;}
+.back-btn:hover{color:var(--text);}
+.back-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.analyse-btn{font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text);background:none;border:1px solid var(--border2);padding:7px 16px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.analyse-btn:hover{border-color:var(--text3);}
+.results-inner{max-width:1100px;margin:0 auto;padding:40px 48px 80px;}
+
+/* CO HEADER */
+.co-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:20px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.co-left{display:flex;align-items:center;gap:16px;}
+.co-av{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:500;flex-shrink:0;}
+.co-title{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1.2;}
+.co-meta{font-size:11px;color:var(--text2);margin-top:4px;font-family:var(--mono);}
+.co-meta span{margin-right:12px;}
+.co-right{text-align:right;}
+.score-big{font-family:var(--mono);font-size:56px;font-weight:500;line-height:1;}
+.score-lbl{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.5px;margin-top:4px;}
+.verdict-pill{display:inline-block;margin-top:6px;font-size:10px;font-weight:600;font-family:var(--mono);letter-spacing:.5px;padding:4px 12px;border-radius:99px;}
+
+/* LIVE PRICE CARD */
+.live-price-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px;}
+.lpc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.lpc-title{font-size:12px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.3px;}
+.lpc-source{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.lpc-price{font-family:var(--mono);font-size:36px;font-weight:500;line-height:1;margin-bottom:8px;}
+.lpc-change{font-family:var(--mono);font-size:13px;margin-bottom:14px;}
+.lpc-change.up{color:var(--green);}
+.lpc-change.dn{color:var(--red);}
+.lpc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.lpc-m{background:var(--bg);border-radius:8px;padding:10px 12px;}
+.lpc-ml{font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;}
+.lpc-mv{font-family:var(--mono);font-size:14px;font-weight:500;}
+
+/* HEALTH BAR */
+.hbar-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px;}
+.hbar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.hbar-title{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.3px;}
+.hbar-score{font-family:var(--mono);font-size:13px;font-weight:500;}
+.hbar-track{height:6px;background:var(--bg2);border-radius:99px;overflow:hidden;margin-bottom:8px;}
+.hbar-fill{height:100%;border-radius:99px;transition:width 1.2s ease;}
+.hbar-marks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--text3);}
+
+.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.score-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.sc-tag{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.8px;padding:3px 9px;border-radius:99px;margin-bottom:12px;}
+.sc-model{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:4px;}
+.sc-val{font-family:var(--mono);font-size:26px;font-weight:500;line-height:1.1;margin-bottom:4px;}
+.sc-verdict{font-size:11px;font-weight:600;}
+.sc-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;}
+.card-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.5px;margin-bottom:16px;font-family:var(--mono);}
+
+.flag-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.flag-item:last-child{border-bottom:none;padding-bottom:0;}
+.flag-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.flag-ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.flag-warn{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.flag-bad{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.flag-text{font-size:13px;font-weight:500;line-height:1.4;}
+.flag-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+
+.ratio-section-title{font-size:10px;font-family:var(--mono);font-weight:600;color:var(--text3);letter-spacing:1px;margin:16px 0 8px;}
+.ratio-section-title:first-child{margin-top:0;}
+.ratio-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:12px;}
+.ratio-row:last-child{border-bottom:none;}
+.ratio-name{font-size:12px;flex:1;}
+.ratio-bench{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.ratio-val{font-family:var(--mono);font-size:13px;font-weight:500;min-width:60px;text-align:right;}
+.rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.rdot-g{background:var(--green);}.rdot-a{background:var(--amber);}.rdot-r{background:var(--red);}
+
+.pio-card,.graham-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px;}
+.pio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.pio-item{background:var(--bg);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:8px;}
+.pio-badge{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.pio-pass{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.pio-fail{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.pio-text{font-size:11px;line-height:1.3;}
+
+.graham-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
+.gnum{background:var(--bg);border-radius:8px;padding:14px;}
+.gnum-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.5px;margin-bottom:4px;}
+.gnum-val{font-family:var(--mono);font-size:20px;font-weight:500;}
+.gnum-sub{font-size:10px;color:var(--text2);margin-top:3px;}
+.graham-formula{margin-top:14px;background:var(--bg2);border-radius:8px;padding:12px 16px;font-family:var(--mono);font-size:11px;color:var(--text2);}
+
+.verdict-box{border-radius:10px;padding:14px 18px;margin-top:14px;border:1px solid;}
+.verdict-box.green{background:var(--green-bg);border-color:var(--green-border);}
+.verdict-box.amber{background:var(--amber-bg);border-color:var(--amber-border);}
+.verdict-box.red{background:var(--red-bg);border-color:var(--red-border);}
+.vb-title{font-size:12px;font-weight:700;margin-bottom:4px;}
+.verdict-box.green .vb-title{color:var(--green);}
+.verdict-box.amber .vb-title{color:var(--amber);}
+.verdict-box.red .vb-title{color:var(--red);}
+.vb-desc{font-size:12px;line-height:1.6;}
+.verdict-box.green .vb-desc{color:#2a5c44;}
+.verdict-box.amber .vb-desc{color:#6b4e1a;}
+.verdict-box.red .vb-desc{color:#6b2a1a;}
+
+.source-note{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:1rem;text-align:center;padding:12px;background:var(--bg2);border-radius:8px;}
+
+.error-card{background:var(--red-bg);border:1px solid var(--red-border);border-radius:12px;padding:24px;text-align:center;margin:48px auto;max-width:480px;}
+.error-title{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--red);margin-bottom:8px;}
+.error-sub{font-size:13px;color:var(--red);line-height:1.6;}
+
+/* CTA */
+.cta-section{background:var(--text);padding:80px 48px;text-align:center;}
+.cta-section h2{font-family:var(--serif);font-size:clamp(32px,4vw,52px);font-weight:700;letter-spacing:-1px;color:#f7f5f2;margin-bottom:16px;line-height:1.08;}
+.cta-section h2 em{font-style:italic;color:#a8c4b4;}
+.cta-section p{font-size:15px;color:rgba(247,245,242,.55);max-width:420px;margin:0 auto 32px;line-height:1.7;}
+.btn-cta{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);background:#f7f5f2;border:none;padding:13px 28px;border-radius:8px;cursor:pointer;transition:background .15s;margin:0 6px;}
+.btn-cta:hover{background:#fff;}
+
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:28px 48px;display:flex;align-items:center;justify-content:space-between;}
+.footer-logo{font-family:var(--serif);font-size:16px;color:var(--text2);}
+.footer-note{font-family:var(--mono);font-size:9px;color:var(--text3);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .5s ease both;}
+.d1{animation-delay:.05s}.d2{animation-delay:.15s}.d3{animation-delay:.25s}.d4{animation-delay:.35s}
+
+@media(max-width:1000px){
+  .hero{grid-template-columns:1fr;gap:40px;}
+  .score-grid{grid-template-columns:repeat(2,1fr);}
+  .two-col{grid-template-columns:1fr;}
+  .pio-grid{grid-template-columns:repeat(2,1fr);}
+  .graham-nums{grid-template-columns:repeat(2,1fr);}
+  .lpc-grid{grid-template-columns:repeat(2,1fr);}
+  nav{padding:0 24px;}
+  .hero,.results-inner,.back-bar{padding-left:24px;padding-right:24px;}
+  .stats-band{flex-wrap:wrap;}
+  .stat-item{min-width:50%;}
+  .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" onclick="goHome()">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" stroke="#f7f5f2" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="8" cy="8" r="5.5"/>
+        <circle cx="8" cy="8" r="2.2" fill="#f7f5f2" stroke="none"/>
+        <path d="M2.5 8Q8 4.5 13.5 8" fill="none"/>
+      </svg>
+    </div>
+    <span class="nav-logo-text">Oogway</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#psx">PSX Coverage</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="api-status">
+      <div class="api-dot" id="api-dot"></div>
+      <span id="api-status-text">Checking API...</span>
+    </div>
+    <button class="btn-nav-fill" onclick="document.getElementById('co-select').focus()">Analyse a company</button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap" id="ticker-wrap">
+  <div class="ticker-track" id="ticker"></div>
+</div>
+
+<!-- HOME VIEW -->
+<div id="view-home">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow fu"><span></span>LIVE PSX DATA</div>
+      <h1 class="fu d1">Invest smarter.<br/>Understand <em>every</em><br/>company you buy.</h1>
+      <p class="hero-sub fu d2">Oogway pulls live PSX prices and runs Altman Z-Score, Piotroski F-Score, Graham Number, and 15+ financial ratios — in seconds.</p>
+      <div class="hero-actions fu d3">
+        <button class="btn-primary" onclick="document.getElementById('co-select').focus()">Analyse a company</button>
+        <button class="btn-secondary" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See how it works</button>
+      </div>
+    </div>
+
+    <div class="fu d4">
+      <div class="search-card">
+        <div class="sc-label">SELECT A COMPANY</div>
+        <div class="sc-select-wrap">
+          <select id="co-select">
+            <option value="">Choose a PSX listed company...</option>
+            <optgroup label="Energy">
+              <option value="PSO">PSO — Pakistan State Oil</option>
+              <option value="OGDC">OGDC — Oil &amp; Gas Dev. Co.</option>
+            </optgroup>
+            <optgroup label="Cement">
+              <option value="LUCK">LUCK — Lucky Cement</option>
+            </optgroup>
+            <optgroup label="Banking">
+              <option value="HBL">HBL — Habib Bank</option>
+              <option value="MCB">MCB — MCB Bank</option>
+              <option value="MEBL">MEBL — Meezan Bank</option>
+            </optgroup>
+            <optgroup label="Fertilizer">
+              <option value="ENGRO">ENGRO — Engro Corporation</option>
+            </optgroup>
+            <optgroup label="Technology">
+              <option value="SYS">SYS — Systems Limited</option>
+            </optgroup>
+            <optgroup label="Food &amp; Consumer">
+              <option value="NESTLE">NESTLE — Nestle Pakistan</option>
+            </optgroup>
+            <optgroup label="Pharmaceuticals">
+              <option value="SEARL">SEARL — The Searle Company</option>
+            </optgroup>
+            <optgroup label="Aviation">
+              <option value="PIAA">PIAA — Pakistan Intl Airlines</option>
+            </optgroup>
+          </select>
+        </div>
+        <button class="sc-btn" onclick="startAnalysis()">Calculate &amp; Analyse</button>
+        <div class="sc-note">Live prices from Yahoo Finance + FY2023 annual report data</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-band">
+    <div class="stat-item"><span class="stat-num">11</span><div class="stat-lbl">PSX companies (Phase 1)</div></div>
+    <div class="stat-item"><span class="stat-num">4</span><div class="stat-lbl">financial models per analysis</div></div>
+    <div class="stat-item"><span class="stat-num">Live</span><div class="stat-lbl">prices from Yahoo Finance</div></div>
+    <div class="stat-item"><span class="stat-num">0</span><div class="stat-lbl">finance degree required</div></div>
+  </div>
+
+  <section id="how" style="background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div style="max-width:1200px;margin:0 auto;padding:80px 48px;">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:500;color:var(--text3);letter-spacing:1.5px;margin-bottom:10px;">HOW IT WORKS</div>
+      <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.1;letter-spacing:-.8px;margin-bottom:48px;">Three steps to clarity.</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:28px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:16px;">01</div>
+          <h3 style="font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:10px;">Select a company</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.65;">Pick any of the 11 PSX-listed companies available in Phase 1. More companies coming when the PSX API is confirmed.</p>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:28px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:16px;">02</div>
+          <h3 style="font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:10px;">API runs the models</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.65;">The FastAPI backend fetches the live price from Yahoo Finance and runs Altman, Piotroski, Graham, and 15+ ratios in real time.</p>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:28px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:16px;">03</div>
+          <h3 style="font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:10px;">Read the verdict</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.65;">Get a health score, colour-coded risk flags, all four model results, and a plain-language verdict on the company.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="psx">
+    <div style="max-width:1200px;margin:0 auto;padding:80px 48px;">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:500;color:var(--text3);letter-spacing:1.5px;margin-bottom:10px;">PSX COVERAGE</div>
+      <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.1;letter-spacing:-.8px;margin-bottom:16px;">Built for Pakistan's market.</h2>
+      <p style="font-size:15px;color:var(--text2);max-width:480px;line-height:1.7;margin-bottom:40px;">Benchmarks calibrated for Pakistan's economic context, PKR-native figures, and risk flags specific to local market conditions.</p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" id="psx-table">
+        <div style="padding:10px 18px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;display:flex;">
+          <span style="flex:1">COMPANY</span><span style="min-width:100px">SECTOR</span><span style="min-width:80px;text-align:right">LIVE PRICE</span>
+        </div>
+        <div id="psx-rows">
+          <div style="padding:20px 18px;text-align:center;font-size:13px;color:var(--text3);font-family:var(--mono);">Loading live prices...</div>
+        </div>
+        <div style="padding:10px 18px;border-top:1px solid var(--border);font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;">11 COMPANIES IN PHASE 1 DATABASE</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-section">
+    <h2>Stop guessing.<br/>Start <em>knowing.</em></h2>
+    <p>Real PSX data, real calculations, real insights.</p>
+    <button class="btn-cta" onclick="document.getElementById('co-select').focus();window.scrollTo({top:0,behavior:'smooth'})">Analyse a company free</button>
+  </div>
+
+  <footer>
+    <span class="footer-logo">Oogway</span>
+    <span class="footer-note">For informational purposes only. Not financial advice.</span>
+  </footer>
+</div>
+
+<!-- LOADING VIEW -->
+<div id="view-loading" style="margin-top:64px;">
+  <div class="loading-card">
+    <div class="loading-logo">Oogway</div>
+    <div class="loading-sub" id="loading-co-name">Analysing...</div>
+    <div class="loading-steps">
+      <div class="lstep" id="ls1"><div class="lstep-icon"></div><span>Connecting to Oogway API</span></div>
+      <div class="lstep" id="ls2"><div class="lstep-icon"></div><span>Fetching live price from Yahoo Finance</span></div>
+      <div class="lstep" id="ls3"><div class="lstep-icon"></div><span>Running Altman Z-Score</span></div>
+      <div class="lstep" id="ls4"><div class="lstep-icon"></div><span>Running Piotroski F-Score</span></div>
+      <div class="lstep" id="ls5"><div class="lstep-icon"></div><span>Computing Graham Number + ratios</span></div>
+      <div class="lstep" id="ls6"><div class="lstep-icon"></div><span>Generating health score</span></div>
+    </div>
+    <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-bar"></div></div>
+  </div>
+</div>
+
+<!-- RESULTS VIEW -->
+<div id="view-results" style="margin-top:64px;">
+  <div class="back-bar">
+    <button class="back-btn" onclick="goHome()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to home
+    </button>
+    <button class="analyse-btn" onclick="goHome()">Analyse another company</button>
+  </div>
+  <div class="results-inner" id="results-inner"></div>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:8000';
+
+// ─── API STATUS CHECK ───────────────────────────────────────────────────────
+async function checkApiStatus() {
+  try {
+    const res = await fetch(API + '/');
+    if (res.ok) {
+      document.getElementById('api-dot').className = 'api-dot online';
+      document.getElementById('api-status-text').textContent = 'API Online';
+    } else {
+      throw new Error();
+    }
+  } catch {
+    document.getElementById('api-dot').className = 'api-dot offline';
+    document.getElementById('api-status-text').textContent = 'API Offline';
+  }
+}
+
+// ─── TICKER ─────────────────────────────────────────────────────────────────
+const TICKERS = ['PSO','OGDC','LUCK','HBL','MCB','MEBL','ENGRO','SYS','NESTLE','SEARL','PIAA'];
+
+async function loadTicker() {
+  const prices = await Promise.allSettled(
+    TICKERS.map(t => fetch(API + '/api/prices/' + t + '/live').then(r => r.json()))
+  );
+  const items = prices.map((p, i) => {
+    if (p.status === 'fulfilled' && p.value.price) {
+      const d = p.value;
+      const up = d.change >= 0;
+      return '<div class="tick-item"><span class="tick-sym">'+TICKERS[i]+'</span><span class="tick-val">'+d.price.toLocaleString()+'</span><span class="'+(up?'tick-up':'tick-dn')+'">'+(up?'+':'')+d.change_pct+'%</span></div>';
+    }
+    return '<div class="tick-item"><span class="tick-sym">'+TICKERS[i]+'</span><span class="tick-val">N/A</span></div>';
+  }).join('');
+  const t = document.getElementById('ticker');
+  t.innerHTML = items + items;
+}
+
+// ─── PSX TABLE ──────────────────────────────────────────────────────────────
+const CO_SECTORS = {
+  PSO:'Energy / OMC', OGDC:'Energy', LUCK:'Cement', HBL:'Banking',
+  MCB:'Banking', MEBL:'Islamic Banking', ENGRO:'Fertilizer',
+  SYS:'Technology', NESTLE:'Food & Consumer', SEARL:'Pharmaceuticals', PIAA:'Aviation'
+};
+const CO_NAMES = {
+  PSO:'Pakistan State Oil', OGDC:'Oil & Gas Dev. Co.', LUCK:'Lucky Cement',
+  HBL:'Habib Bank', MCB:'MCB Bank', MEBL:'Meezan Bank', ENGRO:'Engro Corporation',
+  SYS:'Systems Limited', NESTLE:'Nestle Pakistan', SEARL:'The Searle Company',
+  PIAA:'Pakistan Intl Airlines'
+};
+
+async function loadPsxTable() {
+  const prices = await Promise.allSettled(
+    TICKERS.map(t => fetch(API + '/api/prices/' + t + '/live').then(r => r.json()))
+  );
+  const rows = prices.map((p, i) => {
+    const t = TICKERS[i];
+    const price = (p.status === 'fulfilled' && p.value.price) ? p.value : null;
+    const up = price && price.change >= 0;
+    return '<div style="display:flex;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border);gap:12px;cursor:pointer;transition:background .1s;" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'" onclick="selectAndAnalyse(\''+t+'\')">'+
+      '<div style="flex:1"><div style="font-size:13px;font-weight:600;">'+CO_NAMES[t]+'</div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);">'+CO_SECTORS[t]+'</div></div>'+
+      '<div style="text-align:right;">'+
+        (price ? '<div style="font-family:var(--mono);font-size:13px;font-weight:500;">PKR '+price.price.toLocaleString()+'</div><div style="font-family:var(--mono);font-size:10px;color:'+(up?'var(--green)':'var(--red)')+';">'+(up?'+':'')+price.change_pct+'%</div>' : '<div style="font-family:var(--mono);font-size:11px;color:var(--text3);">N/A</div>')+
+      '</div>'+
+    '</div>';
+  }).join('');
+  document.getElementById('psx-rows').innerHTML = rows;
+}
+
+function selectAndAnalyse(ticker) {
+  document.getElementById('co-select').value = ticker;
+  startAnalysis();
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmt(v, pre, suf) { if (v === null || v === undefined) return 'N/A'; return (pre||'') + v + (suf||''); }
+function rd(v, lo, hi) { return v === null ? 'rdot-a' : v >= hi ? 'rdot-g' : v >= lo ? 'rdot-a' : 'rdot-r'; }
+
+function scoreColor(score) {
+  return score >= 75 ? 'var(--green)' : score >= 55 ? 'var(--amber)' : 'var(--red)';
+}
+
+function verdictClass(verdict) {
+  if (verdict === 'Healthy' || verdict === 'Strong') return 'green';
+  if (verdict === 'Moderate' || verdict === 'Caution') return 'amber';
+  return 'red';
+}
+
+function altmanColor(zone) {
+  return zone === 'safe' ? 'var(--green)' : zone === 'grey' ? 'var(--amber)' : 'var(--red)';
+}
+
+function altmanLabel(zone) {
+  if (zone === 'safe') return 'Safe Zone';
+  if (zone === 'grey') return 'Grey Zone';
+  if (zone === 'bank') return 'Banking Adj.';
+  return 'Distress Zone';
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function goHome() {
+  document.getElementById('view-home').style.display = 'block';
+  document.getElementById('view-loading').style.display = 'none';
+  document.getElementById('view-results').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── ANALYSIS FLOW ───────────────────────────────────────────────────────────
+async function startAnalysis() {
+  const sel = document.getElementById('co-select');
+  const ticker = sel.value;
+  if (!ticker) { sel.focus(); return; }
+
+  // Switch to loading view
+  document.getElementById('view-home').style.display = 'none';
+  document.getElementById('view-results').style.display = 'none';
+  document.getElementById('view-loading').style.display = 'flex';
+  document.getElementById('loading-co-name').textContent = 'Analysing ' + CO_NAMES[ticker] + '...';
+  window.scrollTo({ top: 0, behavior: 'instant' });
+
+  // Animate steps
+  const steps = ['ls1','ls2','ls3','ls4','ls5','ls6'];
+  const delays = [0, 400, 700, 1000, 1300, 1600];
+  const bars = [15, 30, 50, 65, 80, 95];
+
+  steps.forEach((id, i) => {
+    setTimeout(() => {
+      if (i > 0) {
+        const prev = document.getElementById(steps[i-1]);
+        prev.classList.remove('active'); prev.classList.add('done');
+        prev.querySelector('.lstep-icon').innerHTML = '<span class="lstep-check">+</span>';
+      }
+      const el = document.getElementById(id);
+      el.classList.add('active');
+      el.querySelector('.lstep-icon').innerHTML = '<div class="lstep-spinner"></div>';
+      document.getElementById('loading-bar').style.width = bars[i] + '%';
+    }, delays[i]);
+  });
+
+  // Actual API call
+  try {
+    const res = await fetch(API + '/api/analysis/' + ticker);
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || 'Analysis failed');
+    }
+
+    // Complete animation
+    setTimeout(() => {
+      const last = document.getElementById('ls6');
+      last.classList.remove('active'); last.classList.add('done');
+      last.querySelector('.lstep-icon').innerHTML = '<span class="lstep-check">+</span>';
+      document.getElementById('loading-bar').style.width = '100%';
+
+      setTimeout(() => {
+        renderResults(ticker, data);
+        steps.forEach(id => {
+          const el = document.getElementById(id);
+          el.className = 'lstep';
+          el.querySelector('.lstep-icon').innerHTML = '';
+        });
+        document.getElementById('loading-bar').style.width = '0%';
+        document.getElementById('view-loading').style.display = 'none';
+        document.getElementById('view-results').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }, 300);
+    }, 1900);
+
+  } catch (err) {
+    setTimeout(() => {
+      steps.forEach(id => {
+        const el = document.getElementById(id);
+        el.className = 'lstep';
+        el.querySelector('.lstep-icon').innerHTML = '';
+      });
+      document.getElementById('loading-bar').style.width = '0%';
+      document.getElementById('view-loading').style.display = 'none';
+      document.getElementById('view-results').style.display = 'block';
+      document.getElementById('results-inner').innerHTML =
+        '<div class="error-card"><div class="error-title">Analysis failed</div><div class="error-sub">' + err.message + '<br><br>Make sure the Oogway API is running at ' + API + '</div></div>';
+    }, 2000);
+  }
+}
+
+// ─── RENDER RESULTS ──────────────────────────────────────────────────────────
+function renderResults(ticker, d) {
+  const health = d.health;
+  const altman = d.altman;
+  const piotroski = d.piotroski;
+  const graham = d.graham;
+  const ratios = d.ratios;
+  const live = d.live_price;
+
+  const scoreCol = scoreColor(health.score);
+  const vc = verdictClass(health.verdict);
+  const passCount = piotroski.score;
+  const pioVC = passCount >= 7 ? 'green' : passCount >= 5 ? 'amber' : 'red';
+  const grahamVC = graham.applicable ? (graham.delta_pct < 0 ? 'green' : 'amber') : 'red';
+
+  // Live price section
+  const liveHTML = live ? (() => {
+    const up = live.change >= 0;
+    return '<div class="live-price-card fu">' +
+      '<div class="lpc-header"><div class="lpc-title">LIVE PRICE</div><div class="lpc-source">' + live.delay_note + '</div></div>' +
+      '<div class="lpc-price" style="color:' + (up ? 'var(--green)' : 'var(--red)') + '">PKR ' + parseFloat(live.price).toFixed(2) + '</div>' +
+      '<div class="lpc-change ' + (up ? 'up' : 'dn') + '">' + (up ? '+' : '') + live.change + ' (' + (up ? '+' : '') + live.change_pct + '%) today</div>' +
+      '<div class="lpc-grid">' +
+        '<div class="lpc-m"><div class="lpc-ml">OPEN</div><div class="lpc-mv">' + live.open + '</div></div>' +
+        '<div class="lpc-m"><div class="lpc-ml">HIGH</div><div class="lpc-mv">' + live.high + '</div></div>' +
+        '<div class="lpc-m"><div class="lpc-ml">LOW</div><div class="lpc-mv">' + live.low + '</div></div>' +
+        '<div class="lpc-m"><div class="lpc-ml">VOLUME</div><div class="lpc-mv">' + live.volume.toLocaleString() + '</div></div>' +
+      '</div>' +
+    '</div>';
+  })() : '';
+
+  // Piotroski criteria
+  const criteriaLabels = [
+    'Positive ROA', 'Positive operating cash flow', 'Increasing ROA YoY',
+    'Cash flow > net income', 'Decreasing leverage', 'Improving current ratio',
+    'No new share dilution', 'Improving gross margin', 'Improving asset turnover'
+  ];
+  const pioHTML = Object.entries(piotroski.criteria).map(([k, v], i) =>
+    '<div class="pio-item"><div class="pio-badge ' + (v ? 'pio-pass' : 'pio-fail') + '">' + (v ? 'v' : 'x') + '</div><div class="pio-text">' + (criteriaLabels[i] || k) + '</div></div>'
+  ).join('');
+
+  // Risk flags
+  const FLAGS = {
+    PSO: [{t:'ok',h:'Dominant OMC market position',s:'~45% market share in petroleum distribution'},{t:'ok',h:'Revenue growth from volumetric recovery',s:'Fuel demand rebound post-FY22'},{t:'warn',h:'Razor-thin margins from regulated pricing',s:'Government price controls compress profitability'},{t:'warn',h:'Circular debt exposure PKR 600B+',s:'Delayed payments from power sector'},{t:'bad',h:'Significant foreign exchange risk',s:'PKR depreciation inflates import costs'}],
+    OGDC:[{t:'ok',h:'Strong upstream margins in E&P',s:'High gross margins from gas production'},{t:'ok',h:'Low leverage, conservative balance sheet',s:'Debt-to-equity well within safe range'},{t:'warn',h:'Circular debt risk from government receivables',s:'Outstanding dues from power utilities'},{t:'warn',h:'Declining production in mature fields',s:'Ageing fields need costly recovery'}],
+    LUCK:[{t:'ok',h:'Market leader in Pakistan cement sector',s:'Largest capacity and consistent volume growth'},{t:'ok',h:'Export revenues provide FX hedge',s:'Afghanistan and Middle East export volumes growing'},{t:'warn',h:'High energy costs pressure margins',s:'Coal and power costs remain elevated'}],
+    HBL: [{t:'ok',h:'Largest private bank by assets',s:'Dominant retail and corporate franchise'},{t:'ok',h:'Strong CASA ratio supports margins',s:'Low-cost deposits fund earning assets'},{t:'warn',h:'Elevated NPL ratio needs monitoring',s:'Non-performing loans above ideal levels'},{t:'bad',h:'International operations under scrutiny',s:'Compliance costs from NYDFS history'}],
+    MCB: [{t:'ok',h:'Strong profitability among private banks',s:'Consistently above-sector ROE'},{t:'ok',h:'Healthy capital adequacy ratio',s:'Well above regulatory minimums'},{t:'warn',h:'Rising NPLs in line with sector trend',s:'Macro pressures affecting loan quality'}],
+    MEBL:[{t:'ok',h:'Fastest growing Islamic bank in Pakistan',s:'Consistent double-digit deposit growth'},{t:'ok',h:'Best-in-class ROE among banking peers',s:'Superior returns from efficient operations'},{t:'warn',h:'Heavy government Sukuk concentration',s:'Creates significant interest rate risk'},{t:'bad',h:'Trading above Graham Number',s:'Limited margin of safety for value investors'}],
+    ENGRO:[{t:'ok',h:'Diversified conglomerate with strong subsidiaries',s:'Engro Fertilizers, Enfrashare, Elengy Terminal'},{t:'ok',h:'Pakistan first LNG terminal, strategic asset',s:'Provides stable fee-based income'},{t:'warn',h:'Gas curtailment hits fertilizer production',s:'SSGC and SNGPL supply cuts reduce output'}],
+    SYS: [{t:'ok',h:'Leading IT exporter with strong USD revenues',s:'Majority revenues in foreign currency'},{t:'ok',h:'High ROE and asset-light model',s:'Software services need minimal capex'},{t:'warn',h:'Talent retention pressure from brain drain',s:'Competitive overseas salaries pull engineers'}],
+    NESTLE:[{t:'ok',h:'Premium brand with strong pricing power',s:'Iconic brands command market premiums'},{t:'ok',h:'Consistent revenue and earnings growth',s:'Double-digit revenue growth for 5 years'},{t:'warn',h:'Input cost inflation from imported raw materials',s:'PKR weakness inflates costs'}],
+    SEARL:[{t:'ok',h:'Strong pharma brand portfolio',s:'Diversified OTC and Rx product range'},{t:'ok',h:'Trading below Graham Number',s:'Margin of safety present for value investors'},{t:'warn',h:'Drug pricing regulated by DRAP',s:'Price controls limit cost pass-through'}],
+    PIAA:[{t:'bad',h:'Persistent net losses, PKR 44B in FY23',s:'Structural unprofitability from high cost base'},{t:'bad',h:'Negative equity, technically insolvent',s:'Accumulated losses exceed paid-up capital'},{t:'bad',h:'Deep distress zone on Altman Z-Score',s:'Very high bankruptcy risk signal'},{t:'warn',h:'Fleet modernisation plan announced',s:'New aircraft may improve efficiency long-term'}],
+  };
+
+  const flags = FLAGS[ticker] || [{t:'ok',h:'Analysis complete',s:'See ratios and scores below'}];
+  const flagsHTML = flags.map(f =>
+    '<div class="flag-item"><div class="flag-dot flag-' + f.t + '">' + (f.t==='ok'?'v':f.t==='warn'?'!':'x') + '</div><div><div class="flag-text">' + f.h + '</div><div class="flag-sub">' + f.s + '</div></div></div>'
+  ).join('');
+
+  function ratioRow(name, bench, val, dotClass) {
+    return '<div class="ratio-row"><div><div class="ratio-name">' + name + '</div><div class="ratio-bench">' + bench + '</div></div><div class="ratio-val">' + val + '</div><div class="rdot ' + dotClass + '"></div></div>';
+  }
+
+  const p = ratios.profitability;
+  const l = ratios.liquidity;
+  const lev = ratios.leverage;
+  const val = ratios.valuation;
+
+  document.getElementById('results-inner').innerHTML =
+    '<div class="co-header fu">' +
+      '<div class="co-left">' +
+        '<div class="co-av" style="background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);">' + ticker + '</div>' +
+        '<div><div class="co-title">' + d.name + '</div><div class="co-meta"><span>PSX: ' + ticker + '</span><span>' + d.sector + '</span><span>FY' + d.fiscal_year + '</span></div></div>' +
+      '</div>' +
+      '<div class="co-right"><div class="score-big" style="color:' + scoreCol + '">' + health.score + '</div><div class="score-lbl">HEALTH SCORE</div>' +
+      '<div class="verdict-pill" style="background:' + (vc==='green'?'var(--green-bg)':vc==='amber'?'var(--amber-bg)':'var(--red-bg)') + ';color:' + (vc==='green'?'var(--green)':vc==='amber'?'var(--amber)':'var(--red)') + ';border:1px solid ' + (vc==='green'?'var(--green-border)':vc==='amber'?'var(--amber-border)':'var(--red-border)') + ';">' + health.verdict.toUpperCase() + '</div></div>' +
+    '</div>' +
+
+    liveHTML +
+
+    '<div class="hbar-section fu">' +
+      '<div class="hbar-top"><span class="hbar-title">FINANCIAL HEALTH</span><span class="hbar-score" style="color:' + scoreCol + '">' + health.score + ' / 100</span></div>' +
+      '<div class="hbar-track"><div class="hbar-fill" id="hbar-fill" style="width:0%;background:' + scoreCol + '"></div></div>' +
+      '<div class="hbar-marks"><span>0 Critical</span><span>40 Weak</span><span>70 Healthy</span><span>100 Excellent</span></div>' +
+    '</div>' +
+
+    '<div class="score-grid fu">' +
+      '<div class="score-card"><div class="sc-tag" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);">SOLVENCY</div><div class="sc-model">Altman Z-Score</div><div class="sc-val" style="color:' + altmanColor(altman.zone) + '">' + (altman.score !== null ? altman.score : 'N/A') + '</div><div class="sc-verdict" style="color:' + altmanColor(altman.zone) + '">' + altmanLabel(altman.zone) + '</div></div>' +
+      '<div class="score-card"><div class="sc-tag" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);">QUALITY</div><div class="sc-model">Piotroski F-Score</div><div class="sc-val" style="color:' + (passCount>=7?'var(--green)':passCount>=5?'var(--amber)':'var(--red)') + '">' + passCount + ' / 9</div><div class="sc-verdict" style="color:' + (passCount>=7?'var(--green)':passCount>=5?'var(--amber)':'var(--red)') + '">' + (passCount>=7?'Strong Buy':passCount>=5?'Hold':'Sell Signal') + '</div></div>' +
+      '<div class="score-card"><div class="sc-tag" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);">VALUATION</div><div class="sc-model">Graham Number</div><div class="sc-val" style="color:' + (grahamVC==='green'?'var(--green)':grahamVC==='amber'?'var(--amber)':'var(--red)') + '">' + (graham.applicable ? 'PKR ' + graham.graham_number : 'N/A') + '</div><div class="sc-verdict" style="color:' + (grahamVC==='green'?'var(--green)':grahamVC==='amber'?'var(--amber)':'var(--red)') + '">' + (graham.applicable ? (graham.delta_pct < 0 ? 'Undervalued' : 'Overvalued') : 'Not Applicable') + '</div></div>' +
+      '<div class="score-card"><div class="sc-tag" style="background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);">PROFITABILITY</div><div class="sc-model">Net Margin</div><div class="sc-val" style="color:' + (p.net_margin > 10 ? 'var(--green)' : p.net_margin > 0 ? 'var(--amber)' : 'var(--red)') + '">' + fmt(p.net_margin,'','%') + '</div><div class="sc-verdict" style="color:' + (p.net_margin > 10 ? 'var(--green)' : p.net_margin > 0 ? 'var(--amber)' : 'var(--red)') + '">' + (p.net_margin > 10 ? 'Above Benchmark' : p.net_margin > 0 ? 'Below Benchmark' : 'Loss-Making') + '</div></div>' +
+    '</div>' +
+
+    '<div class="two-col fu">' +
+      '<div class="card"><div class="card-title">RISK FLAGS</div>' + flagsHTML + '</div>' +
+      '<div class="card"><div class="card-title">KEY RATIOS</div>' +
+        '<div class="ratio-section-title">PROFITABILITY</div>' +
+        ratioRow('Net profit margin', '>10%', fmt(p.net_margin,'','%'), rd(p.net_margin,0,10)) +
+        ratioRow('Return on equity', '>15%', fmt(p.roe,'','%'), rd(p.roe,8,15)) +
+        ratioRow('Return on assets', '>5%', fmt(p.roa,'','%'), rd(p.roa,2,5)) +
+        (p.gross_margin ? ratioRow('Gross margin', '>20%', fmt(p.gross_margin,'','%'), rd(p.gross_margin,10,20)) : '') +
+        '<div class="ratio-section-title">LIQUIDITY</div>' +
+        (l.current_ratio ? ratioRow('Current ratio', '>1.5x', fmt(l.current_ratio,'','x'), rd(l.current_ratio,1,1.5)) : '') +
+        (l.quick_ratio ? ratioRow('Quick ratio', '>1.0x', fmt(l.quick_ratio,'','x'), rd(l.quick_ratio,0.7,1)) : '') +
+        '<div class="ratio-section-title">LEVERAGE</div>' +
+        ratioRow('Debt to equity', '<2.0x', fmt(lev.debt_to_equity,'','x'), lev.debt_to_equity===null?'rdot-a':lev.debt_to_equity<2?'rdot-g':lev.debt_to_equity<4?'rdot-a':'rdot-r') +
+        '<div class="ratio-section-title">VALUATION</div>' +
+        ratioRow('Price to earnings', 'sector varies', fmt(val.pe,'','x'), val.pe===null?'rdot-a':val.pe<12?'rdot-g':'rdot-a') +
+        ratioRow('Price to book', '<3.0x', fmt(val.pb,'','x'), val.pb===null?'rdot-a':val.pb<3?'rdot-g':'rdot-a') +
+      '</div>' +
+    '</div>' +
+
+    '<div class="pio-card fu"><div class="card-title">PIOTROSKI F-SCORE ' + passCount + ' / 9 CRITERIA PASSED</div><div class="pio-grid">' + pioHTML + '</div>' +
+      '<div class="verdict-box ' + pioVC + '" style="margin-top:14px;"><div class="vb-title">' + (passCount>=7?'Strong buy signal. High quality fundamentals.':passCount>=5?'Neutral. Mixed signals, hold and monitor.':'Weak signal. Consider avoiding or exiting.') + '</div><div class="vb-desc">' + d.name + ' passes ' + passCount + ' of 9 Piotroski criteria across profitability, leverage, and efficiency.</div></div>' +
+    '</div>' +
+
+    '<div class="graham-card fu"><div class="card-title">GRAHAM NUMBER</div>' +
+      '<div class="graham-nums">' +
+        '<div class="gnum"><div class="gnum-label">EPS</div><div class="gnum-val">PKR ' + (graham.applicable && graham.formula ? graham.formula.split('x')[1].trim() : 'N/A') + '</div><div class="gnum-sub">Earnings per share</div></div>' +
+        '<div class="gnum"><div class="gnum-label">GRAHAM NUMBER</div><div class="gnum-val" style="color:' + (grahamVC==='green'?'var(--green)':grahamVC==='amber'?'var(--amber)':'var(--red)') + '">' + (graham.applicable ? 'PKR ' + graham.graham_number : 'N/A') + '</div><div class="gnum-sub">Intrinsic estimate</div></div>' +
+        '<div class="gnum"><div class="gnum-label">MARKET PRICE</div><div class="gnum-val">PKR ' + (live ? parseFloat(live.price).toFixed(2) : graham.market_price ? parseFloat(graham.market_price).toFixed(2) : 'N/A') + '</div><div class="gnum-sub">' + (live ? 'Live from Yahoo Finance' : 'From annual report') + '</div></div>' +
+      '</div>' +
+      (graham.applicable ? '<div class="graham-formula">' + graham.formula + ' = PKR ' + graham.graham_number + ' &nbsp; Market price: PKR ' + (live ? parseFloat(live.price).toFixed(2) : parseFloat(graham.market_price).toFixed(2)) + ' &nbsp; ' + (graham.delta_pct < 0 ? Math.abs(graham.delta_pct) + '% below Graham value' : graham.delta_pct + '% above Graham value') + '</div>' : '') +
+      '<div class="verdict-box ' + grahamVC + '" style="margin-top:14px;"><div class="vb-title">' + (graham.applicable ? (graham.delta_pct < 0 ? 'Stock trades ' + Math.abs(graham.delta_pct) + '% below Graham Number. Margin of safety present.' : 'Stock trades ' + graham.delta_pct + '% above Graham Number. Limited margin of safety.') : 'Graham Number not applicable due to negative or missing EPS / book value.') + '</div></div>' +
+    '</div>' +
+
+    '<div class="source-note fu">Data source: ' + d.data_source + '</div>';
+
+  setTimeout(() => {
+    const bar = document.getElementById('hbar-fill');
+    if (bar) bar.style.width = health.score + '%';
+  }, 200);
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+checkApiStatus();
+loadTicker();
+loadPsxTable();
+setInterval(checkApiStatus, 30000);
+</script>
+</body>
+</html>
