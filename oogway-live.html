@@ -1124,178 +1124,26 @@ section { padding: var(--section-y) 0; }
   <script>
 // PSX universe — Phase 1 coverage
 window.PSX_COMPANIES = [
-  { ticker: "PSO",    name: "Pakistan State Oil",         sector: "Oil & Gas Marketing",   price: 198.45, change: 1.82,  changePct: 0.93 },
-  { ticker: "OGDC",   name: "Oil & Gas Development",      sector: "Exploration & Production", price: 142.10, change: -0.65, changePct: -0.45 },
-  { ticker: "LUCK",   name: "Lucky Cement",               sector: "Cement",                 price: 812.30, change: 6.40,  changePct: 0.79 },
-  { ticker: "HBL",    name: "Habib Bank Limited",         sector: "Commercial Banks",       price: 121.55, change: 0.30,  changePct: 0.25 },
-  { ticker: "MCB",    name: "MCB Bank",                   sector: "Commercial Banks",       price: 213.80, change: 1.15,  changePct: 0.54 },
-  { ticker: "MEBL",   name: "Meezan Bank",                sector: "Islamic Banking",        price: 196.20, change: 2.30,  changePct: 1.19 },
-  { ticker: "ENGRO",  name: "Engro Corporation",          sector: "Diversified",            price: 318.60, change: -1.40, changePct: -0.44 },
-  { ticker: "SYS",    name: "Systems Limited",            sector: "Technology",             price: 432.50, change: 3.85,  changePct: 0.90 },
-  { ticker: "NESTLE", name: "Nestlé Pakistan",            sector: "Food & Personal Care",   price: 6845.00, change: 12.0,  changePct: 0.18 },
-  { ticker: "SEARL",  name: "The Searle Company",         sector: "Pharmaceuticals",        price: 87.20,  change: 0.45,  changePct: 0.52 },
-  { ticker: "PIAA",   name: "Pakistan International Airlines", sector: "Transport",        price: 14.30,  change: -0.10, changePct: -0.69 },
+  { ticker: "PSO",    name: "Pakistan State Oil",              sector: "Oil & Gas Marketing",      price: 0, change: 0, changePct: 0 },
+  { ticker: "OGDC",   name: "Oil & Gas Development",           sector: "Exploration & Production", price: 0, change: 0, changePct: 0 },
+  { ticker: "LUCK",   name: "Lucky Cement",                    sector: "Cement",                   price: 0, change: 0, changePct: 0 },
+  { ticker: "HBL",    name: "Habib Bank Limited",              sector: "Commercial Banks",         price: 0, change: 0, changePct: 0 },
+  { ticker: "MCB",    name: "MCB Bank",                        sector: "Commercial Banks",         price: 0, change: 0, changePct: 0 },
+  { ticker: "MEBL",   name: "Meezan Bank",                     sector: "Islamic Banking",          price: 0, change: 0, changePct: 0 },
+  { ticker: "ENGRO",  name: "Engro Corporation",               sector: "Diversified",              price: 0, change: 0, changePct: 0 },
+  { ticker: "SYS",    name: "Systems Limited",                 sector: "Technology",               price: 0, change: 0, changePct: 0 },
+  { ticker: "NESTLE", name: "Nestlé Pakistan",                 sector: "Food & Personal Care",     price: 0, change: 0, changePct: 0 },
+  { ticker: "SEARL",  name: "The Searle Company",              sector: "Pharmaceuticals",          price: 0, change: 0, changePct: 0 },
+  { ticker: "PIAA",   name: "Pakistan International Airlines", sector: "Transport",                price: 0, change: 0, changePct: 0 },
 ];
 
 // Pre-baked analysis for each ticker. Realistic-ish Phase 1 numbers.
-window.PSX_ANALYSIS = {
-  PSO: {
-    health: 81, verdict: "Healthy",
-    altman: { score: 3.42, zone: "Safe", label: "Safe Zone" },
-    piotroski: { score: 8, max: 9, label: "Strong Buy" },
-    graham: { eps: 31.20, bv: 245.10, gn: 277.40, market: 198.45, verdict: "Undervalued" },
-    netMargin: { value: 4.2, benchmark: 3.0, label: "Above sector" },
-    ratios: {
-      Profitability: [
-        ["Net margin", "≥ 3.0%", "4.2%", true],
-        ["ROE", "≥ 12%", "18.6%", true],
-        ["ROA", "≥ 5%", "6.1%", true],
-      ],
-      Liquidity: [
-        ["Current ratio", "≥ 1.5", "1.78", true],
-        ["Quick ratio", "≥ 1.0", "1.12", true],
-      ],
-      Leverage: [
-        ["Debt / Equity", "≤ 1.5", "0.92", true],
-        ["Interest coverage", "≥ 3.0", "4.40", true],
-      ],
-      Valuation: [
-        ["P/E", "≤ 15", "8.4", true],
-        ["P/B", "≤ 2.0", "1.10", true],
-      ],
-    },
-    piotroskiChecks: [
-      ["Positive net income", true],
-      ["Positive operating cash flow", true],
-      ["Rising ROA", true],
-      ["Cash flow > net income", true],
-      ["Decreasing leverage", true],
-      ["Increasing current ratio", true],
-      ["No new share issuance", false],
-      ["Rising gross margin", true],
-      ["Rising asset turnover", true],
-    ],
-    flags: {
-      positive: [
-        ["Eight of nine Piotroski criteria pass", "Operationally strong; quality of earnings is high."],
-        ["Trading 28% below Graham number", "Significant margin of safety on intrinsic value."],
-        ["Net margin above sector benchmark", "4.2% vs sector 3.0%. Pricing power intact."],
-      ],
-      risk: [
-        ["Share count grew this year", "Mild dilution offsets per-share earnings growth."],
-        ["Working capital cycle lengthening", "Receivable days up 6 vs FY22. Monitor."],
-      ],
-    },
-  },
-  OGDC: {
-    health: 74, verdict: "Healthy",
-    altman: { score: 4.85, zone: "Safe", label: "Safe Zone" },
-    piotroski: { score: 7, max: 9, label: "Buy" },
-    graham: { eps: 28.4, bv: 178.0, gn: 213.20, market: 142.10, verdict: "Undervalued" },
-    netMargin: { value: 32.5, benchmark: 20.0, label: "Well above sector" },
-    ratios: {
-      Profitability: [
-        ["Net margin", "≥ 20%", "32.5%", true],
-        ["ROE", "≥ 15%", "21.4%", true],
-        ["ROA", "≥ 10%", "16.8%", true],
-      ],
-      Liquidity: [
-        ["Current ratio", "≥ 1.5", "3.21", true],
-        ["Quick ratio", "≥ 1.0", "2.85", true],
-      ],
-      Leverage: [
-        ["Debt / Equity", "≤ 1.0", "0.08", true],
-        ["Interest coverage", "≥ 5.0", "42.10", true],
-      ],
-      Valuation: [
-        ["P/E", "≤ 12", "5.0", true],
-        ["P/B", "≤ 2.0", "1.08", true],
-      ],
-    },
-    piotroskiChecks: [
-      ["Positive net income", true],
-      ["Positive operating cash flow", true],
-      ["Rising ROA", false],
-      ["Cash flow > net income", true],
-      ["Decreasing leverage", true],
-      ["Increasing current ratio", true],
-      ["No new share issuance", true],
-      ["Rising gross margin", false],
-      ["Rising asset turnover", true],
-    ],
-    flags: {
-      positive: [
-        ["Fortress balance sheet", "D/E of 0.08 and interest coverage 42×. Minimal financial risk."],
-        ["32.5% net margin", "Best-in-class profitability for the sector."],
-        ["Deep value at P/E 5.0", "Trading well below intrinsic value."],
-      ],
-      risk: [
-        ["Receivable buildup from gas utilities", "Circular debt remains a structural overhang."],
-        ["ROA dipped from prior year", "Earnings growth not keeping pace with asset base."],
-      ],
-    },
-  },
-  LUCK: {
-    health: 78, verdict: "Healthy",
-    altman: { score: 3.95, zone: "Safe", label: "Safe Zone" },
-    piotroski: { score: 7, max: 9, label: "Buy" },
-    graham: { eps: 78.20, bv: 980.0, gn: 1316.40, market: 812.30, verdict: "Undervalued" },
-    netMargin: { value: 16.8, benchmark: 12.0, label: "Above sector" },
-    ratios: {
-      Profitability: [["Net margin", "≥ 12%", "16.8%", true], ["ROE", "≥ 12%", "15.2%", true], ["ROA", "≥ 8%", "10.4%", true]],
-      Liquidity: [["Current ratio", "≥ 1.5", "2.45", true], ["Quick ratio", "≥ 1.0", "1.62", true]],
-      Leverage: [["Debt / Equity", "≤ 1.0", "0.18", true], ["Interest coverage", "≥ 5.0", "18.20", true]],
-      Valuation: [["P/E", "≤ 15", "10.4", true], ["P/B", "≤ 2.5", "0.83", true]],
-    },
-    piotroskiChecks: [["Positive net income", true],["Positive operating cash flow", true],["Rising ROA", true],["Cash flow > net income", true],["Decreasing leverage", true],["Increasing current ratio", false],["No new share issuance", true],["Rising gross margin", false],["Rising asset turnover", true]],
-    flags: {
-      positive: [
-        ["Diversified cement + power + chemicals", "Revenue mix reduces single-sector exposure."],
-        ["Strong free cash flow generation", "Funding international expansion organically."],
-      ],
-      risk: [
-        ["Margin pressure from energy costs", "Watch coal & power input prices."],
-      ],
-    },
-  },
-  HBL: {
-    health: 68, verdict: "Healthy",
-    altman: { score: 1.20, zone: "Grey", label: "Grey Zone (banks)" },
-    piotroski: { score: 6, max: 9, label: "Hold" },
-    graham: { eps: 22.5, bv: 168.0, gn: 184.50, market: 121.55, verdict: "Undervalued" },
-    netMargin: { value: 18.2, benchmark: 15.0, label: "Above sector" },
-    ratios: {
-      Profitability: [["Net margin", "≥ 15%", "18.2%", true], ["ROE", "≥ 12%", "13.6%", true], ["ROA", "≥ 0.8%", "0.91%", true]],
-      Liquidity: [["CASA ratio", "≥ 55%", "62%", true], ["Advances / Deposits", "≤ 70%", "48%", true]],
-      Leverage: [["Capital adequacy", "≥ 11.5%", "16.4%", true], ["Tier-1", "≥ 9%", "13.1%", true]],
-      Valuation: [["P/E", "≤ 8", "5.4", true], ["P/B", "≤ 1.5", "0.72", true]],
-    },
-    piotroskiChecks: [["Positive net income", true],["Positive operating cash flow", true],["Rising ROA", true],["Cash flow > net income", false],["Decreasing leverage", false],["Increasing current ratio", true],["No new share issuance", true],["Rising gross margin", true],["Rising asset turnover", false]],
-    flags: {
-      positive: [
-        ["Capital adequacy at 16.4%", "Well above regulatory floor."],
-        ["P/B at 0.72×", "Trading below book. Historical undervaluation."],
-      ],
-      risk: [
-        ["NPL ratio ticked up 40bps", "Watch asset quality next two quarters."],
-        ["Provisioning rose 22% YoY", "Pre-emptive but compresses net income."],
-      ],
-    },
-  },
-  MCB: { health: 72, verdict: "Healthy", altman: {score:1.4,zone:"Grey",label:"Grey Zone (banks)"}, piotroski:{score:7,max:9,label:"Buy"}, graham:{eps:30.2,bv:198.0,gn:231.10,market:213.80,verdict:"Fair value"}, netMargin:{value:22.4,benchmark:15.0,label:"Above sector"}, ratios:{Profitability:[["Net margin","≥ 15%","22.4%",true],["ROE","≥ 12%","19.8%",true],["ROA","≥ 0.8%","1.4%",true]],Liquidity:[["CASA ratio","≥ 55%","91%",true],["Advances / Deposits","≤ 70%","42%",true]],Leverage:[["Capital adequacy","≥ 11.5%","19.2%",true],["Tier-1","≥ 9%","16.4%",true]],Valuation:[["P/E","≤ 8","7.1",true],["P/B","≤ 1.5","1.08",true]]}, piotroskiChecks:[["Positive net income",true],["Positive operating cash flow",true],["Rising ROA",true],["Cash flow > net income",true],["Decreasing leverage",false],["Increasing current ratio",true],["No new share issuance",true],["Rising gross margin",true],["Rising asset turnover",false]], flags:{positive:[["Industry-leading CASA at 91%","Lowest cost of deposits in the sector."],["ROE near 20%","Compounding shareholder capital faster than peers."]],risk:[["Premium valuation vs peers","P/B 1.08× — less margin of safety."]]} },
-  MEBL: { health: 84, verdict: "Excellent", altman: {score:1.6,zone:"Grey",label:"Grey Zone (banks)"}, piotroski:{score:9,max:9,label:"Strong Buy"}, graham:{eps:42.1,bv:158.0,gn:244.30,market:196.20,verdict:"Undervalued"}, netMargin:{value:28.6,benchmark:15.0,label:"Well above sector"}, ratios:{Profitability:[["Net margin","≥ 15%","28.6%",true],["ROE","≥ 15%","36.2%",true],["ROA","≥ 1.0%","2.1%",true]],Liquidity:[["CASA ratio","≥ 55%","88%",true],["Financing / Deposits","≤ 70%","45%",true]],Leverage:[["Capital adequacy","≥ 11.5%","21.4%",true],["Tier-1","≥ 9%","18.2%",true]],Valuation:[["P/E","≤ 8","4.7",true],["P/B","≤ 2.0","1.24",true]]}, piotroskiChecks:[["Positive net income",true],["Positive operating cash flow",true],["Rising ROA",true],["Cash flow > net income",true],["Decreasing leverage",true],["Increasing current ratio",true],["No new share issuance",true],["Rising gross margin",true],["Rising asset turnover",true]], flags:{positive:[["Perfect 9/9 Piotroski","All quality criteria pass — rare for any bank."],["ROE of 36%","Highest in the sector by a wide margin."],["P/E 4.7× on growing earnings","Quality + growth + value rarely co-exist."]],risk:[["Concentration in Islamic finance","Single product line — regulatory shifts could matter."]]} },
-  ENGRO: { health: 65, verdict: "Healthy", altman: {score:2.4,zone:"Grey",label:"Grey Zone"}, piotroski:{score:5,max:9,label:"Hold"}, graham:{eps:34.5,bv:312.0,gn:328.10,market:318.60,verdict:"Fair value"}, netMargin:{value:9.8,benchmark:8.0,label:"In line"}, ratios:{Profitability:[["Net margin","≥ 8%","9.8%",true],["ROE","≥ 12%","11.2%",false],["ROA","≥ 6%","5.4%",false]],Liquidity:[["Current ratio","≥ 1.5","1.62",true],["Quick ratio","≥ 1.0","1.08",true]],Leverage:[["Debt / Equity","≤ 1.5","0.84",true],["Interest coverage","≥ 3.0","3.20",true]],Valuation:[["P/E","≤ 15","9.2",true],["P/B","≤ 2.0","1.02",true]]}, piotroskiChecks:[["Positive net income",true],["Positive operating cash flow",true],["Rising ROA",false],["Cash flow > net income",true],["Decreasing leverage",true],["Increasing current ratio",true],["No new share issuance",false],["Rising gross margin",false],["Rising asset turnover",false]], flags:{positive:[["Diversified holding structure","Fertilizer + foods + petrochem + energy."]],risk:[["ROE just below 12% benchmark","Capital returns trending sideways."],["Interest coverage thin at 3.2×","Rate cuts would help materially."],["Margins compressed across segments","Watch FY24 turnaround narrative."]]} },
-  SYS: { health: 88, verdict: "Excellent", altman: {score:7.2,zone:"Safe",label:"Safe Zone"}, piotroski:{score:8,max:9,label:"Strong Buy"}, graham:{eps:45.8,bv:182.0,gn:288.10,market:432.50,verdict:"Overvalued"}, netMargin:{value:24.6,benchmark:15.0,label:"Well above sector"}, ratios:{Profitability:[["Net margin","≥ 15%","24.6%",true],["ROE","≥ 18%","28.4%",true],["ROA","≥ 12%","21.0%",true]],Liquidity:[["Current ratio","≥ 2.0","3.85",true],["Quick ratio","≥ 1.5","3.60",true]],Leverage:[["Debt / Equity","≤ 0.3","0.04",true],["Interest coverage","≥ 10","186.0",true]],Valuation:[["P/E","≤ 25","18.4",true],["P/B","≤ 5.0","2.38",true]]}, piotroskiChecks:[["Positive net income",true],["Positive operating cash flow",true],["Rising ROA",true],["Cash flow > net income",true],["Decreasing leverage",true],["Increasing current ratio",true],["No new share issuance",false],["Rising gross margin",true],["Rising asset turnover",true]], flags:{positive:[["28.4% ROE on near-zero debt","Capital-light compounder."],["USD-denominated export revenue","Natural hedge against PKR depreciation."],["Eight of nine Piotroski criteria pass","Quality earnings throughout."]],risk:[["Trading above Graham number","Premium priced — limited margin of safety."],["Client concentration in top 10","Watch large-account renewals."]]} },
-  NESTLE: { health: 70, verdict: "Healthy", altman: {score:3.1,zone:"Safe",label:"Safe Zone"}, piotroski:{score:6,max:9,label:"Hold"}, graham:{eps:248.0,bv:680.0,gn:1729.60,market:6845.00,verdict:"Overvalued"}, netMargin:{value:8.4,benchmark:8.0,label:"In line"}, ratios:{Profitability:[["Net margin","≥ 8%","8.4%",true],["ROE","≥ 40%","124%",true],["ROA","≥ 15%","22.4%",true]],Liquidity:[["Current ratio","≥ 1.0","0.92",false],["Quick ratio","≥ 0.7","0.61",false]],Leverage:[["Debt / Equity","≤ 1.0","0.74",true],["Interest coverage","≥ 5.0","12.40",true]],Valuation:[["P/E","≤ 30","27.6",true],["P/B","≤ 20","12.4",true]]}, piotroskiChecks:[["Positive net income",true],["Positive operating cash flow",true],["Rising ROA",false],["Cash flow > net income",true],["Decreasing leverage",true],["Increasing current ratio",false],["No new share issuance",true],["Rising gross margin",true],["Rising asset turnover",false]], flags:{positive:[["124% ROE","Extreme capital efficiency from FMCG distribution."],["Defensive earnings profile","Recession-resistant categories."]],risk:[["Trades 4× Graham number","Quality is fully priced in."],["Current ratio below 1","Working capital tight by design — but monitor."]]} },
-  SEARL: { health: 62, verdict: "Healthy", altman: {score:2.6,zone:"Grey",label:"Grey Zone"}, piotroski:{score:5,max:9,label:"Hold"}, graham:{eps:11.2,bv:78.0,gn:88.50,market:87.20,verdict:"Fair value"}, netMargin:{value:10.4,benchmark:10.0,label:"In line"}, ratios:{Profitability:[["Net margin","≥ 10%","10.4%",true],["ROE","≥ 12%","14.4%",true],["ROA","≥ 6%","6.2%",true]],Liquidity:[["Current ratio","≥ 1.5","1.42",false],["Quick ratio","≥ 1.0","0.88",false]],Leverage:[["Debt / Equity","≤ 1.0","0.62",true],["Interest coverage","≥ 3.0","2.80",false]],Valuation:[["P/E","≤ 18","7.8",true],["P/B","≤ 2.5","1.12",true]]}, piotroskiChecks:[["Positive net income",true],["Positive operating cash flow",true],["Rising ROA",false],["Cash flow > net income",false],["Decreasing leverage",false],["Increasing current ratio",false],["No new share issuance",true],["Rising gross margin",true],["Rising asset turnover",true]], flags:{positive:[["Trading near Graham number","Reasonable entry price."]],risk:[["Interest coverage below 3.0","Sensitivity to interest rates."],["Working capital tightening","Inventory days rose meaningfully."]]} },
-  PIAA: { health: 18, verdict: "Critical", altman: {score:-3.4,zone:"Distress",label:"Distress Zone"}, piotroski:{score:2,max:9,label:"Avoid"}, graham:{eps:-8.2,bv:-12.0,gn:0,market:14.30,verdict:"Not applicable"}, netMargin:{value:-32.4,benchmark:3.0,label:"Far below sector"}, ratios:{Profitability:[["Net margin","≥ 3%","-32.4%",false],["ROE","≥ 10%","N/A",false],["ROA","≥ 4%","-18.4%",false]],Liquidity:[["Current ratio","≥ 1.0","0.21",false],["Quick ratio","≥ 0.7","0.14",false]],Leverage:[["Debt / Equity","≤ 2.0","Negative equity",false],["Interest coverage","≥ 2.0","-0.8",false]],Valuation:[["P/E","≤ 15","Negative earnings",false],["P/B","≤ 2.0","Negative book",false]]}, piotroskiChecks:[["Positive net income",false],["Positive operating cash flow",false],["Rising ROA",false],["Cash flow > net income",false],["Decreasing leverage",false],["Increasing current ratio",false],["No new share issuance",false],["Rising gross margin",true],["Rising asset turnover",true]], flags:{positive:[["Topline recovering post-pandemic","Revenue up 18% YoY but still negative margins."]],risk:[["Negative equity","Liabilities exceed assets — solvency concern."],["Altman Z in Distress Zone","Quantitative bankruptcy risk."],["Persistent operating losses","Cash burn requires recurring government support."],["Graham number not computable","Negative EPS and book value."]]} },
-};
-
+window.PSX_ANALYSIS = {}
 window.PSX_TICKER = window.PSX_COMPANIES.map(c => ({ ticker: c.ticker, price: c.price, changePct: c.changePct }));
 
 window.OOGWAY_API = 'https://oogway-production-38dc.up.railway.app';
 
-// Expand company list from API in background (adds companies beyond the 11 hardcoded ones)
+// Expand company list from API in background (adds companies beyond the 11 core ones)
 fetch(window.OOGWAY_API + '/api/companies/')
   .then(r => r.json())
   .then(companies => {
@@ -1306,6 +1154,32 @@ fetch(window.OOGWAY_API + '/api/companies/')
     });
   })
   .catch(() => {});
+
+// Batch-fetch live prices for all companies and update PSX_COMPANIES + PSX_TICKER
+(function loadAllLivePrices() {
+  const tickers = window.PSX_COMPANIES.map(c => c.ticker);
+  const requests = tickers.map(t =>
+    fetch(window.OOGWAY_API + '/api/prices/' + t + '/live')
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null)
+  );
+  Promise.all(requests).then(results => {
+    results.forEach((data, i) => {
+      if (!data) return;
+      const co = window.PSX_COMPANIES[i];
+      if (!co) return;
+      co.price     = data.price      || 0;
+      co.change    = data.change     || 0;
+      co.changePct = data.change_pct || 0;
+    });
+    // Rebuild PSX_TICKER so the ticker bar reflects live prices
+    window.PSX_TICKER = window.PSX_COMPANIES.map(c => ({
+      ticker: c.ticker, price: c.price, changePct: c.changePct
+    }));
+    // Notify any mounted React components to re-render the ticker bar
+    window.dispatchEvent(new Event('psx-prices-updated'));
+  });
+})();
 
 // Adapter: converts Railway API response → PSX_ANALYSIS format the frontend expects
 function adaptAnalysis(api) {
@@ -2055,7 +1929,12 @@ function Nav({ onAnalyse, onHome }) {
 
 /* ------- Ticker ------- */
 function Ticker() {
-  const items = window.PSX_TICKER;
+  const [items, setItems] = useState(window.PSX_TICKER);
+  useEffect(() => {
+    const onUpdate = () => setItems([...window.PSX_TICKER]);
+    window.addEventListener('psx-prices-updated', onUpdate);
+    return () => window.removeEventListener('psx-prices-updated', onUpdate);
+  }, []);
   const doubled = [...items, ...items];
   return (
     <div className="ticker" aria-label="Live PSX prices">
@@ -2063,8 +1942,8 @@ function Ticker() {
         {doubled.map((it, i) => (
           <span className="ticker-item" key={i}>
             <span className="t">{it.ticker}</span>
-            <span className="p">{fmtPrice(it.price)}</span>
-            <span className={"c " + (it.changePct < 0 ? "neg" : "")}>{fmtPct(it.changePct)}</span>
+            <span className="p">{it.price ? fmtPrice(it.price) : '—'}</span>
+            <span className={"c " + (it.changePct < 0 ? "neg" : "")}>{it.price ? fmtPct(it.changePct) : ''}</span>
           </span>
         ))}
       </div>
@@ -2108,7 +1987,13 @@ function CompanyDropdown({ value, onChange }) {
 
 /* ------- Hero ------- */
 function Hero({ selected, setSelected, onAnalyse, heroVariant }) {
-  const sel = PSX_COMPANIES.find(c => c.ticker === selected) || PSX_COMPANIES[0];
+  const [companies, setCompanies] = useState(window.PSX_COMPANIES);
+  useEffect(() => {
+    const onUpdate = () => setCompanies([...window.PSX_COMPANIES]);
+    window.addEventListener('psx-prices-updated', onUpdate);
+    return () => window.removeEventListener('psx-prices-updated', onUpdate);
+  }, []);
+  const sel = companies.find(c => c.ticker === selected) || companies[0];
   const a = PSX_ANALYSIS[sel.ticker];
 
   return (
@@ -2141,7 +2026,7 @@ function Hero({ selected, setSelected, onAnalyse, heroVariant }) {
 
             {heroVariant === "list" ? (
               <div className="selector">
-                {PSX_COMPANIES.slice(0, 5).map(c => (
+                {companies.slice(0, 5).map(c => (
                   <div
                     key={c.ticker}
                     className={"selector-row" + (c.ticker === selected ? " active" : "")}
@@ -2149,8 +2034,8 @@ function Hero({ selected, setSelected, onAnalyse, heroVariant }) {
                   >
                     <span className="selector-ticker">{c.ticker}</span>
                     <span className="selector-name">{c.name}</span>
-                    <span className="selector-price">{fmtPrice(c.price)}</span>
-                    <span className={"selector-change" + (c.changePct < 0 ? " neg" : "")}>{fmtPct(c.changePct)}</span>
+                    <span className="selector-price">{c.price ? fmtPrice(c.price) : "—"}</span>
+                    <span className={"selector-change" + (c.changePct < 0 ? " neg" : "")}>{c.price ? fmtPct(c.changePct) : ""}</span>
                   </div>
                 ))}
               </div>
@@ -2166,15 +2051,15 @@ function Hero({ selected, setSelected, onAnalyse, heroVariant }) {
               <div className="hero-pick-numbers">
                 <div>
                   <div className="lab">Price</div>
-                  <div className="val">{fmtPrice(sel.price)}<span className={sel.changePct < 0 ? "neg" : "pos"}>{fmtPct(sel.changePct)}</span></div>
+                  <div className="val">{sel.price ? fmtPrice(sel.price) : <span style={{color:"var(--ink-3)"}}>Loading…</span>}{sel.price ? <span className={sel.changePct < 0 ? "neg" : "pos"}>{fmtPct(sel.changePct)}</span> : null}</div>
                 </div>
                 <div>
                   <div className="lab">Health</div>
-                  <div className="val">{a.health}<span className="pos" style={{color: "var(--ink-3)"}}>/100</span></div>
+                  <div className="val">{a ? a.health : <span style={{color:"var(--ink-3)"}}>—</span>}<span className="pos" style={{color: "var(--ink-3)"}}>{a ? "/100" : ""}</span></div>
                 </div>
                 <div>
                   <div className="lab">Verdict</div>
-                  <div className="val" style={{ fontSize: 14, color: "var(--accent)" }}>{a.verdict}</div>
+                  <div className="val" style={{ fontSize: 14, color: "var(--accent)" }}>{a ? a.verdict : "—"}</div>
                 </div>
               </div>
               <button className="btn btn-primary" onClick={onAnalyse}>
@@ -2246,6 +2131,12 @@ function HowItWorks() {
 
 /* ------- Coverage ------- */
 function Coverage({ onPick }) {
+  const [companies, setCompanies] = useState(window.PSX_COMPANIES);
+  useEffect(() => {
+    const onUpdate = () => setCompanies([...window.PSX_COMPANIES]);
+    window.addEventListener('psx-prices-updated', onUpdate);
+    return () => window.removeEventListener('psx-prices-updated', onUpdate);
+  }, []);
   return (
     <section id="coverage">
       <div className="container">
@@ -2266,15 +2157,15 @@ function Coverage({ onPick }) {
               </tr>
             </thead>
             <tbody>
-              {PSX_COMPANIES.map(c => (
+              {companies.map(c => (
                 <tr key={c.ticker} onClick={() => onPick(c.ticker)}>
                   <td className="co">
                     <span className="co-t">{c.ticker}</span>
                     <span className="co-n">{c.name}</span>
                   </td>
                   <td className="sec">{c.sector}</td>
-                  <td className="price">{fmtPrice(c.price)}</td>
-                  <td className={"chg" + (c.changePct < 0 ? " neg" : "")}>{fmtPct(c.changePct)}</td>
+                  <td className="price">{c.price ? fmtPrice(c.price) : <span style={{color:"var(--ink-3)"}}>—</span>}</td>
+                  <td className={"chg" + (c.changePct < 0 ? " neg" : "")}>{c.price ? fmtPct(c.changePct) : ""}</td>
                   <td className="go"><span className="go-arrow"><Icon.arrow style={{width:12, height:12}} /></span></td>
                 </tr>
               ))}
