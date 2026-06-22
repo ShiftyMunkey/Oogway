@@ -2429,24 +2429,28 @@ function Analysis({ ticker, onBack, onPick }) {
   const [a, setA] = useStateA(PSX_ANALYSIS[ticker] || null);
   const [loading, setLoading] = useStateA(!PSX_ANALYSIS[ticker]);
 
+  const [error, setError] = useStateA(null);
+
   useEffectA(() => {
+    setError(null);
     if (!PSX_ANALYSIS[ticker]) {
       setLoading(true);
       fetch(window.OOGWAY_API + '/api/analysis/' + ticker)
-        .then(r => r.json())
+        .then(r => { if (!r.ok) throw new Error('API returned ' + r.status); return r.json(); })
         .then(apiData => {
           const adapted = adaptAnalysis(apiData);
           window.PSX_ANALYSIS[ticker] = adapted;
           if (apiData.live_price?.price) {
             const co = window.PSX_COMPANIES.find(c => c.ticker === ticker);
-            if (co) { co.price = apiData.live_price.price; co.change = apiData.live_price.change || 0; co.changePct = apiData.live_price.changePct || 0; }
+            if (co) { co.price = apiData.live_price.price; co.change = apiData.live_price.change || 0; co.changePct = apiData.live_price.change_pct || 0; }
           }
           setA(adapted);
           setLoading(false);
         })
-        .catch(() => setLoading(false));
+        .catch(err => { console.error('Analysis fetch failed:', err); setError(err.message || 'Failed to load'); setLoading(false); });
     } else {
       setA(PSX_ANALYSIS[ticker]);
+      setLoading(false);
     }
   }, [ticker]);
 
@@ -2458,7 +2462,16 @@ function Analysis({ ticker, onBack, onPick }) {
       </div>
     </div>
   );
-  if (!a) return null;
+  if (error || !a) return (
+    <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
+      <Nav onAnalyse={() => {}} onHome={onBack} />
+      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,color:'var(--ink-3)',fontSize:13}}>
+        <div style={{fontSize:15,color:'var(--ink)'}}>Could not load analysis for {ticker}</div>
+        <div>{error || 'No data returned from API'}</div>
+        <button className="btn btn-primary" style={{marginTop:8}} onClick={onBack}>Go back</button>
+      </div>
+    </div>
+  );
 
   const company = PSX_COMPANIES.find(c => c.ticker === ticker) || { ticker, name: a._raw?.name || ticker, sector: a._raw?.sector || '—', price: a._raw?.live_price?.price || 0, change: a._raw?.live_price?.change || 0, changePct: a._raw?.live_price?.changePct || 0 };
 
