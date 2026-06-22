@@ -1276,34 +1276,7 @@ class AnalysisBoundary extends React.Component {
   }
 }
 
-function App() {
-//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-//     return (
-//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
-//         Hello
-//         <TweaksPanel>
-//           <TweakSection label="Typography" />
-//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
-//                        onChange={(v) => setTweak('fontSize', v)} />
-//           <TweakRadio  label="Density" value={t.density}
-//                        options={['compact', 'regular', 'comfy']}
-//                        onChange={(v) => setTweak('density', v)} />
-//           <TweakSection label="Theme" />
-//           <TweakColor  label="Primary" value={t.primaryColor}
-//                        options={['#D97757', '#2A6FDB', '#1F8A5B', '#7A5AE0']}
-//                        onChange={(v) => setTweak('primaryColor', v)} />
-//           <TweakColor  label="Palette" value={t.palette}
-//                        options={[['#D97757', '#29261b', '#f6f4ef'],
-//                                  ['#475569', '#0f172a', '#f1f5f9']]}
-//                        onChange={(v) => setTweak('palette', v)} />
-//           <TweakToggle label="Dark mode" value={t.dark}
-//                        onChange={(v) => setTweak('dark', v)} />
-//         </TweaksPanel>
-//       </div>
-//     );
-//   }
-//
-// ─────────────────────────────────────────────────────────────────────────────
+window.AnalysisBoundary = AnalysisBoundary;
 
 const __TWEAKS_STYLE = `
   .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
@@ -2483,9 +2456,20 @@ function Analysis({ ticker, onBack, onPick }) {
     }
   }, [ticker]);
 
-  // Scroll to top whenever ticker changes — must be before conditional returns
   useEffectA(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [ticker]);
 
+  // Derive display values only when data is ready (avoids early returns which break hook order)
+  const company = !loading && a && (PSX_COMPANIES.find(c => c.ticker === ticker) || { ticker, name: a._raw?.name || ticker, sector: a._raw?.sector || '—', price: a._raw?.live_price?.price || 0, change: a._raw?.live_price?.change || 0, changePct: a._raw?.live_price?.changePct || 0 });
+
+  // Guard: only compute display values when data is ready
+  const open  = company ? +(company.price - company.change * 0.4).toFixed(2) : 0;
+  const high  = company ? +(company.price + Math.abs(company.change) * 0.6).toFixed(2) : 0;
+  const low   = company ? +(company.price - Math.abs(company.change) * 0.8).toFixed(2) : 0;
+  const vol   = company ? (Math.abs(company.price * 31_700) | 0).toLocaleString("en-US") : '—';
+  const markerPos   = a ? Math.max(2, Math.min(98, a.health)) : 50;
+  const verdictColor = a ? (a.health >= 75 ? "var(--accent)" : a.health >= 50 ? "var(--warn)" : "var(--neg)") : "var(--ink-4)";
+
+  // Single return — no early returns (prevents React hooks order violation)
   if (loading) return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
       <Nav onAnalyse={() => {}} onHome={onBack} />
@@ -2494,7 +2478,7 @@ function Analysis({ ticker, onBack, onPick }) {
       </div>
     </div>
   );
-  if (error || !a) return (
+  if (error || !a || !company) return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
       <Nav onAnalyse={() => {}} onHome={onBack} />
       <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,color:'var(--ink-3)',fontSize:13}}>
@@ -2504,17 +2488,6 @@ function Analysis({ ticker, onBack, onPick }) {
       </div>
     </div>
   );
-
-  const company = PSX_COMPANIES.find(c => c.ticker === ticker) || { ticker, name: a._raw?.name || ticker, sector: a._raw?.sector || '—', price: a._raw?.live_price?.price || 0, change: a._raw?.live_price?.change || 0, changePct: a._raw?.live_price?.changePct || 0 };
-
-  // Synthetic OHLC for the price card
-  const open = +(company.price - company.change * 0.4).toFixed(2);
-  const high = +(company.price + Math.abs(company.change) * 0.6).toFixed(2);
-  const low  = +(company.price - Math.abs(company.change) * 0.8).toFixed(2);
-  const vol  = (Math.abs(company.price * 31_700) | 0).toLocaleString("en-US");
-
-  const markerPos = Math.max(2, Math.min(98, a.health));
-  const verdictColor = a.health >= 75 ? "var(--accent)" : a.health >= 50 ? "var(--warn)" : "var(--neg)";
 
   return (
     <div className="analysis-shell">
