@@ -2017,7 +2017,7 @@ function Hero({ selected, setSelected, onAnalyse, heroVariant }) {
     if (PSX_ANALYSIS[selected]) { setHeroAnalysis(PSX_ANALYSIS[selected]); return; }
     fetch(window.OOGWAY_API + '/api/analysis/' + selected)
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (!data) return; const adapted = adaptAnalysis(data); window.PSX_ANALYSIS[selected] = adapted; setHeroAnalysis(adapted); })
+      .then(data => { if (!data) return; const adapted = window.adaptAnalysis(data); window.PSX_ANALYSIS[selected] = adapted; setHeroAnalysis(adapted); })
       .catch(() => {});
   }, [selected]);
 
@@ -2751,7 +2751,7 @@ function Analysis({ ticker, onBack, onPick }) {
   );
 }
 
-Object.assign(window, { Analysis });
+Object.assign(window, { Analysis, adaptAnalysis });
 
   </script>
 
