@@ -1991,8 +1991,19 @@ function Hero({ selected, setSelected, onAnalyse, heroVariant }) {
     window.addEventListener('psx-prices-updated', onUpdate);
     return () => window.removeEventListener('psx-prices-updated', onUpdate);
   }, []);
+
+  // Pre-fetch analysis for selected company so health/verdict show in hero card
+  const [heroAnalysis, setHeroAnalysis] = useState(PSX_ANALYSIS[selected] || null);
+  useEffect(() => {
+    if (PSX_ANALYSIS[selected]) { setHeroAnalysis(PSX_ANALYSIS[selected]); return; }
+    fetch(window.OOGWAY_API + '/api/analysis/' + selected)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (!data) return; const adapted = adaptAnalysis(data); window.PSX_ANALYSIS[selected] = adapted; setHeroAnalysis(adapted); })
+      .catch(() => {});
+  }, [selected]);
+
   const sel = companies.find(c => c.ticker === selected) || companies[0];
-  const a = PSX_ANALYSIS[sel.ticker];
+  const a = heroAnalysis;
 
   return (
     <section className="hero hero-center">
@@ -2429,6 +2440,7 @@ function Analysis({ ticker, onBack, onPick }) {
 
   const [error, setError] = useStateA(null);
 
+  // ALL hooks must be declared before any conditional returns (React rules of hooks)
   useEffectA(() => {
     setError(null);
     if (!PSX_ANALYSIS[ticker]) {
@@ -2451,6 +2463,9 @@ function Analysis({ ticker, onBack, onPick }) {
       setLoading(false);
     }
   }, [ticker]);
+
+  // Scroll to top whenever ticker changes — must be before conditional returns
+  useEffectA(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [ticker]);
 
   if (loading) return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
@@ -2481,9 +2496,6 @@ function Analysis({ ticker, onBack, onPick }) {
 
   const markerPos = Math.max(2, Math.min(98, a.health));
   const verdictColor = a.health >= 75 ? "var(--accent)" : a.health >= 50 ? "var(--warn)" : "var(--neg)";
-
-  // Scroll to top on enter
-  useEffectA(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [ticker]);
 
   return (
     <div className="analysis-shell">
