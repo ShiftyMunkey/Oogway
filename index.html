@@ -1256,7 +1256,7 @@ function adaptAnalysis(api) {
 //     "dark": false
 //   }/*EDITMODE-END*/;
 //
-//   class AnalysisBoundary extends React.Component {
+class AnalysisBoundary extends React.Component {
   constructor(props) { super(props); this.state = { error: null }; }
   static getDerivedStateFromError(err) { return { error: err }; }
   componentDidCatch(err, info) { console.error('Analysis render error:', err, info); }
