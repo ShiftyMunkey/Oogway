@@ -1143,7 +1143,7 @@ window.PSX_TICKER = window.PSX_COMPANIES.map(c => ({ ticker: c.ticker, price: c.
 
 window.OOGWAY_API = 'https://oogway-production-38dc.up.railway.app';
 
-// Expand company list from API in background (adds companies beyond the 11 core ones)
+// Step 1: Expand company list, THEN fetch all prices in sequence
 fetch(window.OOGWAY_API + '/api/companies/')
   .then(r => r.json())
   .then(companies => {
@@ -1153,31 +1153,30 @@ fetch(window.OOGWAY_API + '/api/companies/')
       }
     });
   })
-  .catch(() => {});
-
-// Batch-fetch live prices for all companies and update PSX_COMPANIES + PSX_TICKER
-(function loadAllLivePrices() {
-  const tickers = window.PSX_COMPANIES.map(c => c.ticker);
-  const requests = tickers.map(t =>
-    fetch(window.OOGWAY_API + '/api/prices/' + t + '/live')
-      .then(r => r.ok ? r.json() : null)
-      .catch(() => null)
-  );
-  Promise.all(requests).then(results => {
-    results.forEach((data, i) => {
-      if (!data) return;
-      const co = window.PSX_COMPANIES[i];
-      if (!co) return;
-      co.price     = data.price      || 0;
-      co.change    = data.change     || 0;
-      co.changePct = data.change_pct || 0;
+  .catch(() => {})
+  .finally(() => {
+    // Step 2: Now fetch live prices for ALL companies (including newly added ones)
+    const tickers = window.PSX_COMPANIES.map(c => c.ticker);
+    const requests = tickers.map(t =>
+      fetch(window.OOGWAY_API + '/api/prices/' + t + '/live')
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null)
+    );
+    Promise.all(requests).then(results => {
+      results.forEach((data, i) => {
+        if (!data) return;
+        const co = window.PSX_COMPANIES[i];
+        if (!co) return;
+        co.price     = data.price      || 0;
+        co.change    = data.change     || 0;
+        co.changePct = data.change_pct || 0;
+      });
+      window.PSX_TICKER = window.PSX_COMPANIES.map(c => ({
+        ticker: c.ticker, price: c.price, changePct: c.changePct
+      }));
+      window.dispatchEvent(new Event('psx-prices-updated'));
     });
-    window.PSX_TICKER = window.PSX_COMPANIES.map(c => ({
-      ticker: c.ticker, price: c.price, changePct: c.changePct
-    }));
-    window.dispatchEvent(new Event('psx-prices-updated'));
   });
-})();
 
 // Adapter: converts Railway API response → PSX_ANALYSIS format the frontend expects
 function adaptAnalysis(api) {
@@ -1257,7 +1256,27 @@ function adaptAnalysis(api) {
 //     "dark": false
 //   }/*EDITMODE-END*/;
 //
-//   function App() {
+//   class AnalysisBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(err) { return { error: err }; }
+  componentDidCatch(err, info) { console.error('Analysis render error:', err, info); }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',background:'var(--bg)'}}>
+          <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,padding:24}}>
+            <div style={{fontSize:16,color:'var(--ink)',fontWeight:600}}>Something went wrong loading this analysis</div>
+            <div style={{fontFamily:'monospace',fontSize:12,color:'var(--neg)',maxWidth:480,textAlign:'center',wordBreak:'break-all'}}>{this.state.error.message}</div>
+            <button className="btn btn-primary" style={{marginTop:12}} onClick={this.props.onBack}>Go back home</button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function App() {
 //     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 //     return (
 //       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
@@ -2866,7 +2885,9 @@ function App() {
           heroVariant={tweaks.heroVariant}
         />
       ) : (
-        <Analysis ticker={selected} onBack={goHome} onPick={openAnalysis} />
+        <AnalysisBoundary onBack={goHome}>
+          <Analysis ticker={selected} onBack={goHome} onPick={openAnalysis} />
+        </AnalysisBoundary>
       )}
 
       <TweaksPanel>
