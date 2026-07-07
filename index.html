@@ -877,6 +877,64 @@ section { padding: var(--section-y) 0; }
 .a-section .head h3 { font-family: var(--font-display); font-size: clamp(22px, 2.4vw, 28px); letter-spacing: var(--display-track); font-weight: 500; margin: 0; }
 .a-section .head .meta { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
 
+/* ── Article (lesson) view ──────────────────────────── */
+.article-hero { padding: clamp(36px, 5vw, 56px) 0 8px; max-width: 760px; }
+.article-hero .badges { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.article-hero .mono.article-meta { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.article-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 48px);
+  letter-spacing: var(--display-track);
+  font-weight: 500;
+  line-height: 1.08;
+  margin: 0 0 16px;
+}
+.article-lede { font-size: 18px; color: var(--ink-2); line-height: 1.5; margin: 0; max-width: 60ch; }
+
+.article-body { max-width: 720px; }
+.article-body .a-section { padding: clamp(28px, 4vw, 40px) 0; border-top: 1px solid var(--rule); }
+.article-body .a-section:first-child { border-top: none; padding-top: clamp(16px, 3vw, 24px); }
+.article-body .a-section .head { margin-bottom: 14px; }
+.article-body p {
+  font-size: 15.5px;
+  color: var(--ink-2);
+  line-height: 1.7;
+  margin: 0 0 14px;
+}
+.article-body p:last-child { margin-bottom: 0; }
+
+.candle-diagram-wrap {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.candle-diagram { width: 100%; height: auto; display: block; }
+.candle-diagram .cd-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--ink-3); }
+.candle-diagram .cd-caption { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; fill: var(--ink-2); }
+
+.video-card {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  transition: border-color 0.18s, background 0.18s;
+}
+.video-card:hover { border-color: var(--rule-2); background: color-mix(in oklab, var(--bg-elev) 88%, var(--accent) 6%); }
+.video-card-icon {
+  width: 40px; height: 40px; flex: none;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.video-card-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.video-card-title { font-size: 14.5px; font-weight: 500; color: var(--ink); }
+.video-card-channel { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--ink-3); }
+.video-card-note { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; margin-top: 4px; }
+.video-card-arrow { width: 16px; height: 16px; flex: none; color: var(--ink-3); }
+
 .analysis-foot {
   border-top: 1px solid var(--rule);
   padding: 32px 0;
@@ -1079,6 +1137,8 @@ section { padding: var(--section-y) 0; }
   padding: 24px;
   display: flex; flex-direction: column; gap: 14px;
   min-height: 220px;
+  width: 100%;
+  text-align: left;
   transition: transform 0.18s, border-color 0.18s;
   cursor: pointer;
 }
@@ -2385,16 +2445,288 @@ function LiveCharts() {
   );
 }
 
+/* ------- Financial Literacy Hub: lesson data ------- */
+const LESSONS = [
+  {
+    slug: "what-is-psx",
+    level: "Beginner",
+    title: "What is the PSX?",
+    teaser: "How Pakistan's stock exchange works, who can invest, and how buying a share actually makes you money.",
+    dek: "Pakistan's stock market, from the trading engine to your brokerage account.",
+    time: "12 min read",
+    need: "No experience needed",
+    sections: [
+      { h: "A brief history", p: [
+        "The Pakistan Stock Exchange traces back to the Karachi Stock Exchange, founded in 1947. In January 2016, the Karachi, Lahore, and Islamabad stock exchanges merged into a single national exchange: the PSX.",
+        "That consolidation matters for you as an investor — instead of three fragmented markets with their own listings and liquidity, Pakistan now has one order book, one settlement system, and one benchmark index to watch.",
+      ]},
+      { h: "How a trade actually happens", p: [
+        "All trading runs through the Karachi Automated Trading System (KATS), an electronic order-matching engine. You can't trade directly on PSX — you open an account with a licensed brokerage, fund it, and the broker routes your buy or sell order into KATS.",
+        "The exchange trades Monday to Thursday from 9:32am to 3:30pm. Friday has a split session — 9:17am to 12:00pm and 2:32pm to 4:30pm — to accommodate the Friday prayer break.",
+        "When your order fills, settlement (the actual transfer of shares and cash) happens on a T+1 basis — one business day after the trade — a standard PSX adopted in February 2026 to align with international markets.",
+      ]},
+      { h: "Reading the index", p: [
+        "The KSE-100 is the main benchmark: a free-float, capitalization-weighted index of the 100 largest and most liquid PSX-listed companies. When news says 'the market was up today,' this is usually the number they mean.",
+        "Two other indices worth knowing: the KSE-30, a tighter basket of the 30 biggest names, and the KMI-30, a Shariah-compliant index built for investors who want to screen out interest-based and non-compliant businesses.",
+      ]},
+      { h: "Who's actually trading", p: [
+        "PSX lists over 560 companies with a combined market capitalization north of PKR 18 trillion. The investor base includes roughly 220,000 retail investors, over 400 brokerage houses, and a mix of nearly 1,900 foreign and 880 domestic institutional investors.",
+        "That's a market with real depth in its largest names, but liquidity thins out fast outside the top 100 — something worth keeping in mind before you place an order in a smaller counter.",
+      ]},
+      { h: "How you make money", p: [
+        "There are two ways a share pays you back: capital gains, when you sell for more than you paid, and dividends, a direct cash payout the company distributes from its profits.",
+        "Owning a share means owning a small, proportional slice of that company's future earnings — which is exactly why the numbers in a company's financial statements matter more than its stock price chart.",
+      ]},
+    ],
+    video: { title: "What it means to buy a company's stock", channel: "Khan Academy", url: "https://www.youtube.com/watch?v=98qfFzqDKR8", note: "Not PSX-specific, but it's the clearest short explanation anywhere of what owning a share actually means." },
+  },
+  {
+    slug: "reading-balance-sheet",
+    level: "Beginner",
+    title: "Reading a Balance Sheet",
+    teaser: "Break down assets, liabilities, and equity in plain language. Understand what a healthy company looks like on paper.",
+    dek: "Three numbers that tell you almost everything about a company's financial footing.",
+    time: "18 min read",
+    need: "No experience needed",
+    sections: [
+      { h: "The equation everything rests on", p: [
+        "Every balance sheet balances around one identity: Assets = Liabilities + Equity. What a company owns (assets) is always financed by some mix of what it owes to others (liabilities) and what belongs to shareholders (equity).",
+        "That's not an accounting trick — it's a snapshot of who has a claim on the company's resources, and in what order, if things ever went wrong.",
+      ]},
+      { h: "Assets: what the company owns", p: [
+        "Current assets are things that convert to cash within a year — cash itself, receivables owed by customers, inventory sitting in a warehouse. Non-current assets are the slower-moving stuff: property, plant, equipment, and long-term investments.",
+        "The split matters because current assets are what a company can lean on quickly if it needs cash, while non-current assets represent its longer-term productive capacity.",
+      ]},
+      { h: "Liabilities: what it owes", p: [
+        "Current liabilities are obligations due within a year — supplier payables, short-term borrowings, the current portion of long-term debt. Non-current liabilities are longer-dated: bonds, term loans, deferred obligations.",
+        "A company with far more current liabilities than current assets can be profitable on paper and still struggle to pay its bills on time.",
+      ]},
+      { h: "Equity: what's left for shareholders", p: [
+        "Equity is the residual claim — what's left over after every liability is subtracted from every asset. It's built from paid-up capital (money shareholders originally put in) plus retained earnings (profits the company has kept rather than paid out as dividends).",
+        "This is often called 'book value,' and comparing it to a company's market price is one of the oldest tricks in value investing — it's exactly what the Graham Number does.",
+      ]},
+      { h: "Spotting health at a glance", p: [
+        "Two quick ratios go a long way: the current ratio (current assets ÷ current liabilities) tells you if a company can cover its near-term bills, and debt-to-equity tells you how leveraged it is relative to shareholder capital.",
+        "This is also exactly the raw material Oogway's Altman Z-Score and Piotroski F-Score run through — the same balance sheet lines, put through the same tests professional analysts use. Once you can read the statement yourself, the health score on any Oogway page stops being a black box.",
+      ]},
+    ],
+    video: { title: "How to Read and Understand a Balance Sheet", channel: "Business Insider — Business: Explained", url: "https://www.youtube.com/watch?v=BfXhpe1XxdI", note: null },
+  },
+  {
+    slug: "understanding-risk",
+    level: "Intermediate",
+    title: "Understanding Risk",
+    teaser: "What is risk appetite? How do you measure it and how do you match investments to your personal financial situation?",
+    dek: "Risk isn't something to avoid — it's something to size correctly.",
+    time: "22 min read",
+    need: "Basic knowledge",
+    sections: [
+      { h: "Risk, risk tolerance, and risk capacity", p: [
+        "These three get used interchangeably and shouldn't be. Risk is the uncertainty in an outcome — the range of things that could happen. Risk tolerance is your emotional willingness to sit through a loss without panic-selling. Risk capacity is your financial ability to absorb a loss without derailing something you actually need the money for.",
+        "You can have high risk tolerance and low risk capacity — feel completely calm about volatility while genuinely not being able to afford a 30% drawdown right before you need the cash. Capacity should always win that argument.",
+      ]},
+      { h: "The kinds of risk you'll meet on the PSX", p: [
+        "Market risk moves everything at once — a broad selloff drags even well-run companies down with it. Company-specific risk is isolated to one name — a bad earnings report, a management scandal. Liquidity risk shows up in thinly-traded counters, where you might struggle to exit a position at a fair price.",
+        "Currency risk is worth naming explicitly for PKR-denominated portfolios: a devaluation can quietly erode real returns even when the stock price itself is flat. And concentration risk — too much of your money in one sector, like banks or E&P — means a single sector-wide shock hits your whole portfolio at once.",
+      ]},
+      { h: "Matching risk to time horizon", p: [
+        "Money you need within the next year or two generally shouldn't be in equities at all — there isn't enough time to ride out a downturn. Longer horizons can absorb more volatility, simply because there's time on your side to recover before you need to cash out.",
+        "This is why 'what's your risk appetite' is really a shorthand for 'how long can this money sit untouched.'",
+      ]},
+      { h: "How Oogway scores risk for you", p: [
+        "The Altman Z-Score zones — Safe, Grey, Distress — are a direct read on bankruptcy risk. The Piotroski F-Score is a read on earnings quality risk: is the profit real and durable, or propped up by accounting choices.",
+        "Neither score tells you which stock will go up. What they do is help you size a position sensibly — putting less capital behind a Grey-zone company than a Safe-zone one, regardless of how good the growth story sounds.",
+      ]},
+    ],
+    video: { title: "5 Questions To Ask Before Investing", channel: "Two Cents (PBS)", url: "https://www.youtube.com/watch?v=y72iyLPOv8E", note: null },
+  },
+  {
+    slug: "reading-stock-charts",
+    level: "Intermediate",
+    title: "How to Read Stock Charts",
+    teaser: "Candlesticks, moving averages, volume bars decoded step by step so you know exactly what PSX charts are telling you.",
+    dek: "Candles, averages, and volume — the three layers of every price chart.",
+    time: "25 min read",
+    need: "Basic knowledge",
+    diagram: "candlestick",
+    sections: [
+      { h: "Anatomy of a candlestick", p: [
+        "Each candlestick summarizes one trading period — a day, an hour, whatever the chart's timeframe is set to. Four numbers go into it: the open (price at the start), the close (price at the end), and the high and low (the extremes touched in between).",
+        "The thick part is the body, spanning open to close. A green (or accent-colored) body means the close was higher than the open — buyers were in control. A red body means the close was lower than the open — sellers were. The thin lines above and below the body are wicks, showing how far price stretched before pulling back.",
+      ]},
+      { h: "Moving averages: smoothing the noise", p: [
+        "A moving average plots the average closing price over a set window — commonly 20, 50, or 200 periods — and updates it every day. It turns a jagged price line into a smoother trend.",
+        "Broadly, price trading above its 200-day average is read as a longer-term uptrend context; trading below is a downtrend context. Shorter averages like the 20-day react faster and are more useful for spotting near-term shifts.",
+      ]},
+      { h: "Volume: does the move have backing", p: [
+        "Volume bars, usually shown beneath the price chart, count how many shares changed hands in each period. A price jump on unusually high volume carries more weight than the same-size jump on thin, quiet volume — it suggests real conviction behind the move rather than a couple of small trades pushing price around.",
+      ]},
+      { h: "Putting it together", p: [
+        "None of these three layers — candles, averages, volume — mean much in isolation. A green candle on collapsing volume is a weaker signal than a green candle on a volume spike. Oogway's live charts on the coverage page plot all three together so you can practice reading them against real PSX price action.",
+      ]},
+    ],
+    video: { title: "The Ultimate Candlestick Patterns Trading Course", channel: "Rayner Teo", url: "https://www.youtube.com/watch?v=C3KRwfj9F8Q", note: null },
+  },
+  {
+    slug: "building-a-portfolio",
+    level: "Advanced",
+    title: "Building a Portfolio",
+    teaser: "Diversification, sector allocation, and rebalancing. How to build a PSX portfolio that matches your goals and risk profile.",
+    dek: "One good company isn't a portfolio. Here's how to build one that can survive being wrong.",
+    time: "30 min read",
+    need: "Intermediate knowledge",
+    sections: [
+      { h: "Why diversification exists", p: [
+        "Nobody reliably predicts which single stock outperforms. Diversification doesn't try to — it accepts that some picks will disappoint and spreads capital across enough companies that no single mistake determines the outcome.",
+        "This isn't about owning more for its own sake. It's about making sure being wrong about one company costs you a manageable amount, not your portfolio.",
+      ]},
+      { h: "Sector allocation on the PSX", p: [
+        "PSX sectors move on different cycles — commercial banks respond to interest rate policy, E&P and oil & gas to global crude prices, cement and fertilizer to construction and agricultural demand, textiles to export orders and cotton prices.",
+        "Whichever sector has been hottest recently is exactly the one worth checking your weighting in — sector momentum is easy to chase and easy to overweight without noticing.",
+      ]},
+      { h: "How many stocks is enough", p: [
+        "The bulk of diversification's benefit shows up with a surprisingly modest number of holdings — most of the research on this points to somewhere in the range of 15 to 30 stocks across different sectors, after which adding more names does less and less to reduce risk.",
+        "Ben Felix's video linked below makes a sharper, more contrarian point worth sitting with: an index fund's diversification isn't automatically optimal just because it's broad — it's a starting point for thinking about portfolio construction, not the final word.",
+      ]},
+      { h: "Rebalancing", p: [
+        "A portfolio drifts on its own — winners grow into a bigger share of your money, losers shrink. Rebalancing means periodically trimming the winners and topping up the laggards to bring weights back to your original targets.",
+        "It's not glamorous, and it means selling some of what's been working. That's the point — it's a discipline against letting a good run turn into an accidental concentration risk.",
+      ]},
+    ],
+    video: { title: "Are Index Funds Over-Diversified?", channel: "Ben Felix — PWL Capital", url: "https://www.youtube.com/watch?v=xfdMDGIABek", note: null },
+  },
+  {
+    slug: "micro-investment-strategies",
+    level: "Advanced",
+    title: "Micro-Investment Strategies",
+    teaser: "How to start investing with as little as PKR 5,000. Practical approaches for building wealth on a modest income.",
+    dek: "You don't need half a million rupees to start. You need a system.",
+    time: "20 min read",
+    need: "All levels",
+    sections: [
+      { h: "Why 'too small to matter' is the wrong framing", p: [
+        "A fixed amount invested regularly compounds on its own schedule, regardless of how small it feels at the start. The gap between someone who starts with PKR 5,000 a month at 25 and someone who waits until they have PKR 50,000 a month to 'really start investing' at 35 is almost never made up later — time in the market does more work than the size of any single contribution.",
+      ]},
+      { h: "Rupee-cost averaging", p: [
+        "Investing a fixed amount on a fixed schedule — say, the same date every month — means you automatically buy more shares when prices are low and fewer when they're high, without ever having to guess which is which.",
+        "The real benefit isn't mathematical, it's psychological: it removes the pressure to time the market, which is a game even professional fund managers mostly lose.",
+      ]},
+      { h: "What quietly eats small portfolios", p: [
+        "Two things work against a small account: brokerage commissions, which take a proportionally bigger bite out of a small trade than a large one, and inflation, which erodes cash sitting idle in a savings account far faster than most people account for. The video below makes this second point better than most.",
+      ]},
+      { h: "A practical starting system", p: [
+        "Pick two or three companies you actually understand — or start from names scoring well on Oogway's health score — commit a fixed monthly amount you won't miss, automate the transfer so it doesn't depend on willpower, and review the portfolio quarterly rather than checking prices every day.",
+      ]},
+    ],
+    video: { title: "Something's Eating Your Money!", channel: "Two Cents (PBS)", url: "https://www.youtube.com/watch?v=uudPHdBBPO4", note: "This one's about inflation, not micro-investing directly — but it's the sharpest explanation anywhere of why leaving small amounts of cash idle costs more than people think." },
+  },
+];
+
+/* ------- Candlestick anatomy diagram ------- */
+function CandleDiagram() {
+  return (
+    <svg viewBox="0 0 420 220" className="candle-diagram" role="img" aria-label="Diagram of a candlestick showing open, high, low, close, body, and wicks">
+      {/* gridlines */}
+      {[40, 80, 120, 160, 200].map(y => (
+        <line key={y} x1="0" y1={y} x2="420" y2={y} stroke="var(--rule)" strokeWidth="1" />
+      ))}
+      {/* bearish candle (red) */}
+      <g>
+        <line x1="120" y1="30" x2="120" y2="190" stroke="var(--neg)" strokeWidth="2" />
+        <rect x="96" y="60" width="48" height="90" fill="var(--neg)" opacity="0.85" rx="2" />
+        <text x="120" y="20" textAnchor="middle" className="cd-label">High</text>
+        <text x="120" y="208" textAnchor="middle" className="cd-label">Low</text>
+        <text x="60" y="64" textAnchor="end" className="cd-label">Open</text>
+        <line x1="66" y1="60" x2="94" y2="60" stroke="var(--ink-3)" strokeWidth="1" strokeDasharray="2 2" />
+        <text x="60" y="154" textAnchor="end" className="cd-label">Close</text>
+        <line x1="66" y1="150" x2="94" y2="150" stroke="var(--ink-3)" strokeWidth="1" strokeDasharray="2 2" />
+      </g>
+      {/* bullish candle (accent) */}
+      <g>
+        <line x1="300" y1="24" x2="300" y2="184" stroke="var(--accent)" strokeWidth="2" />
+        <rect x="276" y="54" width="48" height="84" fill="var(--accent)" rx="2" />
+        <text x="300" y="14" textAnchor="middle" className="cd-label">High</text>
+        <text x="300" y="202" textAnchor="middle" className="cd-label">Low</text>
+        <text x="360" y="58" textAnchor="start" className="cd-label">Close</text>
+        <line x1="326" y1="54" x2="354" y2="54" stroke="var(--ink-3)" strokeWidth="1" strokeDasharray="2 2" />
+        <text x="360" y="142" textAnchor="start" className="cd-label">Open</text>
+        <line x1="326" y1="138" x2="354" y2="138" stroke="var(--ink-3)" strokeWidth="1" strokeDasharray="2 2" />
+      </g>
+      <text x="120" y="240" textAnchor="middle" className="cd-caption" transform="translate(0,-24)">Bearish — closed lower</text>
+      <text x="300" y="240" textAnchor="middle" className="cd-caption" transform="translate(0,-24)">Bullish — closed higher</text>
+    </svg>
+  );
+}
+
+/* ------- Article (full lesson view) ------- */
+function Article({ slug, onBack, onNavLink }) {
+  const lesson = LESSONS.find(l => l.slug === slug) || LESSONS[0];
+  const lvlClass = (l) => l === "Beginner" ? "lvl-1" : l === "Intermediate" ? "lvl-2" : "lvl-3";
+  return (
+    <div className="analysis-shell">
+      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} />
+      <div className="container">
+        <div className="analysis-bar">
+          <div className="left">
+            <button className="back" onClick={onBack}>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 8H3M7 4L3 8l4 4" />
+              </svg>
+              Back to home
+            </button>
+            <span className="crumb">Learn · {lesson.level}</span>
+          </div>
+        </div>
+
+        <div className="article-hero">
+          <div className="badges">
+            <span className={"pill-badge " + lvlClass(lesson.level)}>{lesson.level}</span>
+            <span className="mono article-meta">{lesson.time}</span>
+            <span className="mono article-meta">{lesson.need}</span>
+          </div>
+          <h1>{lesson.title}</h1>
+          <p className="article-lede">{lesson.dek}</p>
+        </div>
+
+        <div className="article-body">
+          {lesson.sections.map((s, i) => (
+            <div className="a-section" key={i}>
+              <div className="head"><h3>{s.h}</h3></div>
+              {s.p.map((para, j) => <p key={j}>{para}</p>)}
+            </div>
+          ))}
+
+          {lesson.diagram === "candlestick" && (
+            <div className="a-section">
+              <div className="candle-diagram-wrap"><CandleDiagram /></div>
+            </div>
+          )}
+
+          {lesson.video && (
+            <div className="a-section">
+              <div className="head"><h3>Watch next</h3></div>
+              <a className="video-card" href={lesson.video.url} target="_blank" rel="noopener noreferrer">
+                <div className="video-card-icon">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div className="video-card-body">
+                  <span className="video-card-title">{lesson.video.title}</span>
+                  <span className="video-card-channel">{lesson.video.channel}</span>
+                  {lesson.video.note && <span className="video-card-note">{lesson.video.note}</span>}
+                </div>
+                <Icon.arrowUR className="video-card-arrow" />
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
 /* ------- Financial Literacy Hub ------- */
-function LiteracyHub() {
-  const lessons = [
-    { level: "Beginner",    title: "What is the PSX?",            body: "How Pakistan's stock exchange works, who can invest, and how buying a share actually makes you money.", time: "12 min read", need: "No experience needed" },
-    { level: "Beginner",    title: "Reading a Balance Sheet",      body: "Break down assets, liabilities, and equity in plain language. Understand what a healthy company looks like on paper.", time: "18 min read", need: "No experience needed" },
-    { level: "Intermediate",title: "Understanding Risk",           body: "What is risk appetite? How do you measure it and how do you match investments to your personal financial situation?", time: "22 min read", need: "Basic knowledge" },
-    { level: "Intermediate",title: "How to Read Stock Charts",     body: "Candlesticks, moving averages, volume bars decoded step by step so you know exactly what PSX charts are telling you.", time: "25 min read", need: "Basic knowledge" },
-    { level: "Advanced",    title: "Building a Portfolio",         body: "Diversification, sector allocation, and rebalancing. How to build a PSX portfolio that matches your goals and risk profile.", time: "30 min read", need: "Intermediate knowledge" },
-    { level: "Advanced",    title: "Micro-Investment Strategies",  body: "How to start investing with as little as PKR 5,000. Practical approaches for building wealth on a modest income.", time: "20 min read", need: "All levels" },
-  ];
+function LiteracyHub({ onOpenArticle }) {
   const lvlClass = (l) => l === "Beginner" ? "lvl-1" : l === "Intermediate" ? "lvl-2" : "lvl-3";
   return (
     <section id="learn">
@@ -2405,16 +2737,16 @@ function LiteracyHub() {
           <p>Structured lessons for first-time investors. Clear, jargon-free, and available in Urdu and English.</p>
         </div>
         <div className="lessons">
-          {lessons.map((l, i) => (
-            <article className="lesson" key={i}>
+          {LESSONS.map((l, i) => (
+            <button className="lesson" key={i} onClick={() => onOpenArticle && onOpenArticle(l.slug)}>
               <span className={"pill-badge " + lvlClass(l.level)}>{l.level}</span>
               <h3>{l.title}</h3>
-              <p>{l.body}</p>
+              <p>{l.teaser}</p>
               <div className="lesson-foot">
                 <span className="mono">{l.time}</span>
                 <span className="mono">{l.need}</span>
               </div>
-            </article>
+            </button>
           ))}
         </div>
       </div>
@@ -2435,7 +2767,7 @@ function Landing(props) {
       <Methodology />
       <LiveCharts />
       <Coverage onPick={props.onPick} />
-      <LiteracyHub />
+      <LiteracyHub onOpenArticle={props.onOpenArticle} />
       <DarkCTA onAnalyse={props.onAnalyse} />
       <Footer />
     </>
@@ -2444,7 +2776,7 @@ function Landing(props) {
 
 Object.assign(window, {
   Landing, Nav, Ticker, Hero, Stats, HowItWorks, Methodology, Coverage, DarkCTA, Footer,
-  Features, LiveCharts, LiteracyHub,
+  Features, LiveCharts, LiteracyHub, LESSONS, Article, CandleDiagram,
   Icon, fmtPrice, fmtPct,
 });
 
@@ -2885,8 +3217,9 @@ function applyHeading(name) {
 }
 
 function App() {
-  const [view, setView] = useStateApp("home"); // "home" | "analysis"
+  const [view, setView] = useStateApp("home"); // "home" | "analysis" | "article"
   const [selected, setSelected] = useStateApp("PSO");
+  const [selectedLesson, setSelectedLesson] = useStateApp("what-is-psx");
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
   useEffectApp(() => { applyPalette(tweaks.palette); }, [tweaks.palette]);
@@ -2901,6 +3234,11 @@ function App() {
   const openAnalysis = (t) => {
     if (t) setSelected(t);
     setView("analysis");
+  };
+  const openArticle = (slug) => {
+    setSelectedLesson(slug);
+    setView("article");
+    window.scrollTo(0, 0);
   };
   const goHome = () => setView("home");
 
@@ -2938,8 +3276,11 @@ function App() {
           onPick={openAnalysis}
           onHome={goHome}
           onNavLink={goToSection}
+          onOpenArticle={openArticle}
           heroVariant={tweaks.heroVariant}
         />
+      ) : view === "article" ? (
+        <Article slug={selectedLesson} onBack={goHome} onNavLink={goToSection} />
       ) : (
         <AnalysisBoundary onBack={goHome}>
           <Analysis ticker={selected} onBack={goHome} onPick={openAnalysis} onNavLink={goToSection} />
