@@ -985,8 +985,11 @@ section { padding: var(--section-y) 0; }
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
+  text-align: left;
   transition: transform 0.2s, border-color 0.2s, background 0.2s;
 }
+button.feature { cursor: pointer; }
 .feature:hover {
   transform: translateY(-2px);
   border-color: var(--rule-2);
@@ -2141,12 +2144,18 @@ function Hero({ selected, setSelected, onAnalyse, heroVariant }) {
 
 /* ------- Stats ------- */
 function Stats() {
+  const [count, setCount] = useState(window.PSX_COMPANIES.length);
+  useEffect(() => {
+    const onUpdate = () => setCount(window.PSX_COMPANIES.length);
+    window.addEventListener('psx-prices-updated', onUpdate);
+    return () => window.removeEventListener('psx-prices-updated', onUpdate);
+  }, []);
   return (
     <div className="container">
       <div className="stats">
         <div className="stat">
-          <div className="val mono">11</div>
-          <div className="lab">PSX companies covered in Phase&nbsp;1</div>
+          <div className="val mono">{count}</div>
+          <div className="lab">PSX companies covered</div>
         </div>
         <div className="stat">
           <div className="val mono">4</div>
@@ -2196,27 +2205,31 @@ function HowItWorks() {
 }
 
 /* ------- Methodology ------- */
-function Methodology() {
+function Methodology({ onOpenArticle }) {
   const models = [
     {
+      slug: "algo-altman-z-score",
       title: "Altman Z-Score",
       body: "A bankruptcy-risk model built from five weighted balance-sheet and income-statement ratios. Places a company into a Safe, Grey, or Distress zone.",
       badge: "Bankruptcy risk",
       icon: <Icon.pulse />,
     },
     {
+      slug: "algo-piotroski-f-score",
       title: "Piotroski F-Score",
       body: "A 9-point checklist across profitability, leverage, and operating efficiency. Each criterion that passes adds a point — higher scores flag stronger quality of earnings.",
       badge: "Quality of earnings",
       icon: <Icon.check />,
     },
     {
+      slug: "algo-graham-number",
       title: "Graham Number",
       body: "Benjamin Graham's defensive-investor formula, derived from EPS and book value per share, to estimate the maximum price worth paying for a stock.",
       badge: "Intrinsic value",
       icon: <Icon.book />,
     },
     {
+      slug: "algo-sector-relative-margin",
       title: "Sector-relative net margin",
       body: "Net profit margin benchmarked against sector peers, to see whether a company converts revenue into profit better or worse than others in its industry.",
       badge: "Profitability",
@@ -2233,12 +2246,12 @@ function Methodology() {
         </div>
         <div className="features-grid">
           {models.map((m, i) => (
-            <article className="feature" key={i}>
+            <button className="feature" key={i} onClick={() => onOpenArticle && onOpenArticle(m.slug)}>
               <div className="feature-icon">{m.icon}</div>
               <h3>{m.title}</h3>
               <p>{m.body}</p>
               <span className="pill-badge">{m.badge}</span>
-            </article>
+            </button>
           ))}
         </div>
       </div>
@@ -2260,7 +2273,7 @@ function Coverage({ onPick }) {
         <div className="section-head">
           <span className="eyebrow"><span className="dot" />PSX coverage</span>
           <h2>Built for Pakistan's market.</h2>
-          <p>Eleven names across banking, energy, cement, FMCG, tech and transport. We expand coverage as new annual reports land.</p>
+          <p>{companies.length} names across banking, energy, cement, tech and more. We expand coverage as new annual reports land.</p>
         </div>
         <div className="coverage-card">
           <table className="table">
@@ -2288,7 +2301,7 @@ function Coverage({ onPick }) {
               ))}
             </tbody>
           </table>
-          <div className="coverage-foot">11 companies · Phase 1 database · expanding monthly</div>
+          <div className="coverage-foot">{companies.length} companies · live database · expanding monthly</div>
         </div>
       </div>
     </section>
@@ -2403,7 +2416,6 @@ function LiveCharts() {
             <p className="lc-lede">Candlestick charts, volume bars, moving averages, and live price feeds for every company on the Pakistan Stock Exchange. Presented clearly, not cluttered.</p>
             <div className="lc-tags">
               <span className="pill-badge pro">Pro feature</span>
-              <span className="pill-badge muted">Phase 2</span>
             </div>
             <ul className="lc-list">
               <li><span className="lc-check"><Icon.check style={{width:11,height:11}} /></span>Candlestick charts with volume indicators</li>
@@ -2623,6 +2635,106 @@ const LESSONS = [
   },
 ];
 
+/* ------- Methodology: algorithm deep-dive articles ------- */
+const ALGO_ARTICLES = [
+  {
+    slug: "algo-altman-z-score",
+    level: "Intermediate",
+    title: "Altman Z-Score",
+    dek: "The bankruptcy-risk formula behind every Safe / Grey / Distress zone on Oogway.",
+    time: "10 min read",
+    need: "Basic knowledge",
+    sections: [
+      { h: "The formula", p: [
+        "Oogway computes the classic five-ratio Altman Z-Score: Z = 1.2·X₁ + 1.4·X₂ + 3.3·X₃ + 0.6·X₄ + 1.0·X₅.",
+        "X₁ is Working Capital ÷ Total Assets — a liquidity cushion. X₂ is Retained Earnings ÷ Total Assets — roughly a measure of accumulated, reinvested profitability over the company's life. X₃ is EBIT ÷ Total Assets — core operating profitability, before financing and tax decisions distort the picture. X₄ is Market Capitalization ÷ Total Liabilities — the market's own real-time verdict on how well equity value covers what's owed. X₅ is Revenue ÷ Total Assets — how much sales a company generates per rupee of assets it holds.",
+      ]},
+      { h: "Reading the zones", p: [
+        "A score above 2.99 lands in the Safe zone. Between 1.81 and 2.99 is the Grey zone — not distressed, but not comfortably safe either. Below 1.81 is the Distress zone, historically associated with meaningfully elevated bankruptcy risk within the following two years.",
+        "Banking companies get flagged separately on Oogway rather than forced through the same five ratios — a bank's balance sheet (mostly deposits and loans) doesn't fit the same liquidity and asset-turnover assumptions the model was built around.",
+      ]},
+      { h: "The honest limitations", p: [
+        "X₂ quietly penalizes young companies: a firm with only a few years of retained earnings will score lower here almost by definition, regardless of how well it's actually run today.",
+        "X₄ pulls in market capitalization, which means a stock price swing — even one driven by sentiment rather than anything operational — moves this input and can shift a company between zones without a single number on its financial statements changing.",
+        "The model itself was built in 1968 on US manufacturing companies. Applying it to a PSX-listed company means running a Pakistani balance sheet through ratios calibrated on a different economy, in a different era. Useful as one signal among several — not a verdict on its own.",
+      ]},
+      { h: "Where it fits in your health score", p: [
+        "The Altman zone contributes 30 of the 100 points in Oogway's composite health score: Safe scores 30, Grey scores 15, Distress scores 0, banking companies get a flat 20, and an unscorable result (missing data) defaults to 10.",
+      ]},
+    ],
+  },
+  {
+    slug: "algo-piotroski-f-score",
+    level: "Intermediate",
+    title: "Piotroski F-Score",
+    dek: "A 9-point quality-of-earnings checklist — how many boxes does a company actually tick?",
+    time: "10 min read",
+    need: "Basic knowledge",
+    sections: [
+      { h: "The nine checks", p: [
+        "Four checks look at profitability: is return on assets (ROA) positive, is operating cash flow positive, did ROA improve from the prior year, and — importantly — is operating cash flow greater than net income. That last one flags companies whose reported profit isn't fully backed by actual cash coming in the door, a classic early warning sign of aggressive accounting.",
+        "Three checks look at leverage and liquidity: did leverage decrease year over year, did the current ratio improve, and did the company avoid issuing new shares (no dilution of existing shareholders).",
+        "Two checks look at operating efficiency: did gross margin improve, and did asset turnover improve.",
+      ]},
+      { h: "Scoring", p: [
+        "Each check that passes adds one point, for a maximum of 9. Oogway labels 7–9 as a Strong Buy signal, 4–6 as Neutral, and 0–3 as a Sell Signal — mirroring the original Piotroski research, which found the top and bottom bands were where the score actually predicted forward returns most reliably.",
+      ]},
+      { h: "The honest limitations", p: [
+        "Six of the nine checks compare against a prior-year figure. For a company with limited price or financial history on Oogway, some of those checks will compute as 0 simply because there's no prior year to compare against yet — not because the company actually failed that test. A low score on a recently-added company is worth a second look before you read too much into it.",
+      ]},
+      { h: "Where it fits in your health score", p: [
+        "The Piotroski score contributes 25 of the 100 composite points, scaled linearly: (score ÷ 9) × 25.",
+      ]},
+    ],
+  },
+  {
+    slug: "algo-graham-number",
+    level: "Intermediate",
+    title: "Graham Number",
+    dek: "Benjamin Graham's one-line test for whether a stock is priced above or below what a defensive investor should pay.",
+    time: "8 min read",
+    need: "Basic knowledge",
+    sections: [
+      { h: "The formula", p: [
+        "Graham Number = √(22.5 × EPS × Book Value Per Share). The 22.5 isn't arbitrary — it's Graham's own defensive-investor ceilings multiplied together: a maximum acceptable P/E of 15, times a maximum acceptable P/B of 1.5.",
+        "The result is a single rupee figure: roughly the most a conservative, safety-first investor should be willing to pay for the stock, given its current earnings and book value.",
+      ]},
+      { h: "Reading the verdict", p: [
+        "Oogway compares the current market price against this number directly. Trading below the Graham Number reads as Undervalued. Trading up to about 10% above it reads as Fair value. Further above that reads as Overvalued.",
+      ]},
+      { h: "When it doesn't apply", p: [
+        "The formula needs both a positive EPS and a positive book value — you can't take the square root of a negative number. If a company posted a loss, or has negative equity, Oogway marks the Graham Number 'Not applicable' rather than forcing out a figure that wouldn't mean anything.",
+      ]},
+      { h: "The honest limitations", p: [
+        "This formula assumes stable, unspectacular earnings — exactly what Graham wanted for a defensive portfolio. It wasn't built for high-growth names, where today's low EPS understates tomorrow's earning power, or for cyclical businesses (oil & gas, cement, textiles) where a peak-cycle or trough-cycle EPS can swing the number wildly depending on where the sector happens to be in its cycle. Treat it as one data point, not a price target.",
+      ]},
+    ],
+  },
+  {
+    slug: "algo-sector-relative-margin",
+    level: "Beginner",
+    title: "Sector-relative net margin",
+    dek: "How much of every rupee in revenue a company actually keeps — measured against a common bar.",
+    time: "7 min read",
+    need: "No experience needed",
+    sections: [
+      { h: "What net margin means", p: [
+        "Net margin is Net Income ÷ Revenue — the percentage of every rupee of sales that survives every cost, every interest payment, and every tax bill to become actual bottom-line profit.",
+      ]},
+      { h: "The current benchmark", p: [
+        "Oogway checks net margin against a flat 5% benchmark today, not yet a fully dynamic per-sector average. Above 15% reads as 'Well above sector,' 5–15% as 'Above sector,' 0–5% as 'In line,' and negative as 'Below sector.'",
+        "Worth being upfront about: a bank and a textile exporter currently get compared against the same 5% line, even though a healthy margin looks very different in those two businesses. Genuinely sector-calibrated benchmarks — comparing a company only against its own sector peers — are on the roadmap, not live yet.",
+      ]},
+      { h: "Why it's still useful", p: [
+        "Even a flat bar catches the two things that matter most for a quick screen: companies that are clearly burning cash on every sale (negative margin) and companies that are clearly best-in-class at converting revenue into profit. That's most of what this check is doing for you today.",
+      ]},
+      { h: "Where it fits in your health score", p: [
+        "Net margin contributes up to 15 of the 100 composite points: above 15% scores the full 15, 5–15% scores 8, 0–5% scores 3, and negative margin scores 0.",
+      ]},
+    ],
+  },
+];
+
 /* ------- Candlestick anatomy diagram ------- */
 function CandleDiagram() {
   return (
@@ -2661,7 +2773,10 @@ function CandleDiagram() {
 
 /* ------- Article (full lesson view) ------- */
 function Article({ slug, onBack, onNavLink }) {
-  const lesson = LESSONS.find(l => l.slug === slug) || LESSONS[0];
+  const ALL_ARTICLES = LESSONS.concat(ALGO_ARTICLES);
+  const lesson = ALL_ARTICLES.find(l => l.slug === slug) || ALL_ARTICLES[0];
+  const isAlgo = ALGO_ARTICLES.some(a => a.slug === lesson.slug);
+  const crumbLabel = isAlgo ? "Methodology" : "Learn";
   const lvlClass = (l) => l === "Beginner" ? "lvl-1" : l === "Intermediate" ? "lvl-2" : "lvl-3";
   return (
     <div className="analysis-shell">
@@ -2675,7 +2790,7 @@ function Article({ slug, onBack, onNavLink }) {
               </svg>
               Back to home
             </button>
-            <span className="crumb">Learn · {lesson.level}</span>
+            <span className="crumb">{crumbLabel} · {lesson.level}</span>
           </div>
         </div>
 
@@ -2765,7 +2880,7 @@ function Landing(props) {
       <Stats />
       <Features />
       <HowItWorks />
-      <Methodology />
+      <Methodology onOpenArticle={props.onOpenArticle} />
       <LiveCharts />
       <Coverage onPick={props.onPick} />
       <LiteracyHub onOpenArticle={props.onOpenArticle} />
@@ -2777,7 +2892,7 @@ function Landing(props) {
 
 Object.assign(window, {
   Landing, Nav, Ticker, Hero, Stats, HowItWorks, Methodology, Coverage, DarkCTA, Footer,
-  Features, LiveCharts, LiteracyHub, LESSONS, Article, CandleDiagram,
+  Features, LiveCharts, LiteracyHub, LESSONS, ALGO_ARTICLES, Article, CandleDiagram,
   Icon, fmtPrice, fmtPct,
 });
 
