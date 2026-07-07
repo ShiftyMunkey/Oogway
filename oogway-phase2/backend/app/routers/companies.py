@@ -33,7 +33,6 @@ PSX_COMPANIES = [
     {"ticker": "KOHC",   "name": "Kohat Cement",                "sector": "Cement"},
     {"ticker": "ACPL",   "name": "Attock Cement",               "sector": "Cement"},
     # Fertilizer
-    {"ticker": "ENGRO",  "name": "Engro Corporation",           "sector": "Fertilizer"},
     {"ticker": "FFC",    "name": "Fauji Fertilizer Company",    "sector": "Fertilizer"},
     {"ticker": "FATIMA", "name": "Fatima Fertilizer",           "sector": "Fertilizer"},
     {"ticker": "EFERT",  "name": "Engro Fertilizers",           "sector": "Fertilizer"},
@@ -53,11 +52,9 @@ PSX_COMPANIES = [
     {"ticker": "AVN",    "name": "Avanceon Limited",            "sector": "Technology"},
     # Power
     {"ticker": "HUBC",   "name": "Hub Power Company",           "sector": "Power"},
-    {"ticker": "KAPCO",  "name": "Kot Addu Power",              "sector": "Power"},
     {"ticker": "NCPL",   "name": "Nishat Chunian Power",        "sector": "Power"},
     # Automobile
     {"ticker": "INDU",   "name": "Indus Motor Company",         "sector": "Automobile"},
-    {"ticker": "PSMC",   "name": "Pak Suzuki Motor",            "sector": "Automobile"},
     {"ticker": "HCAR",   "name": "Honda Atlas Cars",            "sector": "Automobile"},
     {"ticker": "MTL",    "name": "Millat Tractors",             "sector": "Automobile"},
     # Textile
@@ -67,8 +64,7 @@ PSX_COMPANIES = [
     # Insurance
     {"ticker": "EFUG",   "name": "EFU General Insurance",       "sector": "Insurance"},
     {"ticker": "JLICL",  "name": "Jubilee Life Insurance",      "sector": "Insurance"},
-    # Aviation
-    {"ticker": "PIAA",   "name": "Pakistan Intl Airlines",      "sector": "Aviation"},
+    # Transport
     {"ticker": "PNSC",   "name": "Pakistan National Shipping",  "sector": "Transport"},
 ]
 

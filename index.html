@@ -1185,7 +1185,7 @@ button.feature { cursor: pointer; }
   <div id="root"></div>
 
   <script>
-// PSX universe — Phase 1 coverage
+// PSX universe — companies confirmed working end-to-end (analysis + live price)
 window.PSX_COMPANIES = [
   { ticker: "PSO",    name: "Pakistan State Oil",              sector: "Oil & Gas Marketing",      price: 0, change: 0, changePct: 0 },
   { ticker: "OGDC",   name: "Oil & Gas Development",           sector: "Exploration & Production", price: 0, change: 0, changePct: 0 },
@@ -1193,11 +1193,9 @@ window.PSX_COMPANIES = [
   { ticker: "HBL",    name: "Habib Bank Limited",              sector: "Commercial Banks",         price: 0, change: 0, changePct: 0 },
   { ticker: "MCB",    name: "MCB Bank",                        sector: "Commercial Banks",         price: 0, change: 0, changePct: 0 },
   { ticker: "MEBL",   name: "Meezan Bank",                     sector: "Islamic Banking",          price: 0, change: 0, changePct: 0 },
-  { ticker: "ENGRO",  name: "Engro Corporation",               sector: "Diversified",              price: 0, change: 0, changePct: 0 },
   { ticker: "SYS",    name: "Systems Limited",                 sector: "Technology",               price: 0, change: 0, changePct: 0 },
   { ticker: "NESTLE", name: "Nestlé Pakistan",                 sector: "Food & Personal Care",     price: 0, change: 0, changePct: 0 },
   { ticker: "SEARL",  name: "The Searle Company",              sector: "Pharmaceuticals",          price: 0, change: 0, changePct: 0 },
-  { ticker: "PIAA",   name: "Pakistan International Airlines", sector: "Transport",                price: 0, change: 0, changePct: 0 },
 ];
 
 // Pre-baked analysis for each ticker. Realistic-ish Phase 1 numbers.
@@ -2177,7 +2175,7 @@ function Stats() {
 /* ------- How it works ------- */
 function HowItWorks() {
   const steps = [
-    { n: "01", t: "Pick a company", b: "Choose any PSX-listed name from our Phase 1 universe. We'll pull its latest price and the FY2023 annual report figures in one click.", icon: <Icon.target /> },
+    { n: "01", t: "Pick a company", b: "Choose any PSX-listed name from our coverage. We'll pull its latest price and financial statements in one click.", icon: <Icon.target /> },
     { n: "02", t: "We run the models", b: "Altman Z, Piotroski F, Graham Number and a sector-relative margin check. The same frameworks taught in business schools, executed in milliseconds.", icon: <Icon.layers /> },
     { n: "03", t: "Read the verdict", b: "A single health score, four model results, plain-English risk flags, and a ratio breakdown grouped the way analysts actually think.", icon: <Icon.pulse /> },
   ];
@@ -2340,7 +2338,7 @@ function Footer() {
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span className="brand-mark" style={{ width: 22, height: 22, fontSize: 11 }}>O</span>
           <span>Oogway</span>
-          <span className="mono" style={{ marginLeft: 12 }}>v0.4 · Phase 1</span>
+          <span className="mono" style={{ marginLeft: 12 }}>v0.4</span>
         </div>
         <div className="mono">For informational purposes only. Not financial advice.</div>
       </div>
@@ -3200,7 +3198,7 @@ function Analysis({ ticker, onBack, onPick, onNavLink }) {
 
         {/* Other companies — quick navigate */}
         <div className="a-section">
-          <div className="head"><h3>Compare another company</h3><span className="meta">Phase 1 universe</span></div>
+          <div className="head"><h3>Compare another company</h3><span className="meta">Full coverage</span></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
             {PSX_COMPANIES.filter(c => c.ticker !== ticker).map(c => (
               <button key={c.ticker} className="selector-row" onClick={() => onPick(c.ticker)} style={{ textAlign: "left" }}>
