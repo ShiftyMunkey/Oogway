@@ -1893,7 +1893,11 @@ const fmtPrice = (n) => {
 const fmtPct = (n) => (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
 
 /* ------- Nav ------- */
-function Nav({ onAnalyse, onHome }) {
+function Nav({ onAnalyse, onHome, onNavLink }) {
+  const go = (id) => (e) => {
+    e.preventDefault();
+    if (onNavLink) onNavLink(id);
+  };
   return (
     <header className="nav">
       <div className="container nav-inner">
@@ -1902,9 +1906,9 @@ function Nav({ onAnalyse, onHome }) {
           <span className="brand-name">Oogway</span>
         </button>
         <nav className="nav-links">
-          <a className="nav-link" href="#how">How it works</a>
-          <a className="nav-link" href="#coverage">Coverage</a>
-          <a className="nav-link" href="#methodology">Methodology</a>
+          <a className="nav-link" href="#how" onClick={go("how")}>How it works</a>
+          <a className="nav-link" href="#coverage" onClick={go("coverage")}>Coverage</a>
+          <a className="nav-link" href="#methodology" onClick={go("methodology")}>Methodology</a>
         </nav>
         <div className="nav-right">
           <span className="api-pill"><span className="pulse" />API Online</span>
@@ -2123,6 +2127,57 @@ function HowItWorks() {
               <h3>{s.t}</h3>
               <p>{s.b}</p>
             </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------- Methodology ------- */
+function Methodology() {
+  const models = [
+    {
+      title: "Altman Z-Score",
+      body: "A bankruptcy-risk model built from five weighted balance-sheet and income-statement ratios. Places a company into a Safe, Grey, or Distress zone.",
+      badge: "Bankruptcy risk",
+      icon: <Icon.pulse />,
+    },
+    {
+      title: "Piotroski F-Score",
+      body: "A 9-point checklist across profitability, leverage, and operating efficiency. Each criterion that passes adds a point — higher scores flag stronger quality of earnings.",
+      badge: "Quality of earnings",
+      icon: <Icon.check />,
+    },
+    {
+      title: "Graham Number",
+      body: "Benjamin Graham's defensive-investor formula, derived from EPS and book value per share, to estimate the maximum price worth paying for a stock.",
+      badge: "Intrinsic value",
+      icon: <Icon.book />,
+    },
+    {
+      title: "Sector-relative net margin",
+      body: "Net profit margin benchmarked against sector peers, to see whether a company converts revenue into profit better or worse than others in its industry.",
+      badge: "Profitability",
+      icon: <Icon.chart />,
+    },
+  ];
+  return (
+    <section id="methodology">
+      <div className="container">
+        <div className="section-head">
+          <span className="eyebrow"><span className="dot" />Methodology</span>
+          <h2>Four models,<br/>one health score.</h2>
+          <p>The composite blends Altman Z-Score, Piotroski F-Score, Graham Number positioning, and sector-relative net margin into a single 0–100 reading — the same frameworks taught in business schools, executed against the latest reported numbers.</p>
+        </div>
+        <div className="features-grid">
+          {models.map((m, i) => (
+            <article className="feature" key={i}>
+              <div className="feature-icon">{m.icon}</div>
+              <h3>{m.title}</h3>
+              <p>{m.body}</p>
+              <span className="pill-badge">{m.badge}</span>
+            </article>
           ))}
         </div>
       </div>
@@ -2371,12 +2426,13 @@ function LiteracyHub() {
 function Landing(props) {
   return (
     <>
-      <Nav onAnalyse={props.onAnalyse} onHome={props.onHome} />
+      <Nav onAnalyse={props.onAnalyse} onHome={props.onHome} onNavLink={props.onNavLink} />
       <Ticker />
       <Hero {...props} />
       <Stats />
       <Features />
       <HowItWorks />
+      <Methodology />
       <LiveCharts />
       <Coverage onPick={props.onPick} />
       <LiteracyHub />
@@ -2387,7 +2443,7 @@ function Landing(props) {
 }
 
 Object.assign(window, {
-  Landing, Nav, Ticker, Hero, Stats, HowItWorks, Coverage, DarkCTA, Footer,
+  Landing, Nav, Ticker, Hero, Stats, HowItWorks, Methodology, Coverage, DarkCTA, Footer,
   Features, LiveCharts, LiteracyHub,
   Icon, fmtPrice, fmtPct,
 });
@@ -2426,7 +2482,7 @@ function HealthDial({ score }) {
   );
 }
 
-function Analysis({ ticker, onBack, onPick }) {
+function Analysis({ ticker, onBack, onPick, onNavLink }) {
   const [a, setA] = useStateA(PSX_ANALYSIS[ticker] || null);
   const [loading, setLoading] = useStateA(!PSX_ANALYSIS[ticker]);
 
@@ -2472,7 +2528,7 @@ function Analysis({ ticker, onBack, onPick }) {
   // Single return — no early returns (prevents React hooks order violation)
   if (loading) return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
-      <Nav onAnalyse={() => {}} onHome={onBack} />
+      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} />
       <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--ink-3)',fontSize:13,letterSpacing:'0.04em'}}>
         Loading analysis for {ticker}…
       </div>
@@ -2480,7 +2536,7 @@ function Analysis({ ticker, onBack, onPick }) {
   );
   if (error || !a || !company) return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
-      <Nav onAnalyse={() => {}} onHome={onBack} />
+      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} />
       <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,color:'var(--ink-3)',fontSize:13}}>
         <div style={{fontSize:15,color:'var(--ink)'}}>Could not load analysis for {ticker}</div>
         <div>{error || 'No data returned from API'}</div>
@@ -2491,7 +2547,7 @@ function Analysis({ ticker, onBack, onPick }) {
 
   return (
     <div className="analysis-shell">
-      <Nav onAnalyse={() => {}} onHome={onBack} />
+      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} />
 
       <div className="container">
         <div className="analysis-bar">
@@ -2840,11 +2896,37 @@ function App() {
       tweaks.density === "compact" ? "clamp(56px, 7vw, 96px)" : "clamp(72px, 9vw, 128px)");
   }, [tweaks.density]);
 
+  const [pendingAnchor, setPendingAnchor] = useStateApp(null);
+
   const openAnalysis = (t) => {
     if (t) setSelected(t);
     setView("analysis");
   };
   const goHome = () => setView("home");
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // Nav links must work from any view: if already home, scroll directly;
+  // otherwise navigate home first and scroll once the section has mounted.
+  const goToSection = (id) => {
+    if (view === "home") {
+      scrollToSection(id);
+    } else {
+      setPendingAnchor(id);
+      setView("home");
+    }
+  };
+
+  useEffectApp(() => {
+    if (view === "home" && pendingAnchor) {
+      const id = pendingAnchor;
+      requestAnimationFrame(() => requestAnimationFrame(() => scrollToSection(id)));
+      setPendingAnchor(null);
+    }
+  }, [view, pendingAnchor]);
 
   return (
     <>
@@ -2855,11 +2937,12 @@ function App() {
           onAnalyse={() => openAnalysis()}
           onPick={openAnalysis}
           onHome={goHome}
+          onNavLink={goToSection}
           heroVariant={tweaks.heroVariant}
         />
       ) : (
         <AnalysisBoundary onBack={goHome}>
-          <Analysis ticker={selected} onBack={goHome} onPick={openAnalysis} />
+          <Analysis ticker={selected} onBack={goHome} onPick={openAnalysis} onNavLink={goToSection} />
         </AnalysisBoundary>
       )}
 
