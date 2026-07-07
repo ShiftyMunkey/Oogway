@@ -51,6 +51,118 @@ def get_company_info(ticker: str) -> dict:
     }
 
 
+def get_full_fundamentals(ticker: str) -> Optional[dict]:
+    """
+    Live fallback for tickers with no curated FY2023 entry in FINANCIAL_DB.
+
+    Pulls the balance sheet, income statement, and cash flow statement from
+    Yahoo Finance — current year AND prior year, where available — and
+    shapes the result exactly like a FINANCIAL_DB entry so the same
+    calc_altman_zscore / calc_piotroski / calc_graham_number functions run
+    unchanged on it.
+
+    Known limitations (on the record, not hidden):
+    - "shares_issued" (Piotroski's no-dilution check) can't be reliably
+      derived from Yahoo's data for most PSX tickers, so it defaults to
+      False (assume no dilution). This can slightly inflate the Piotroski
+      score for companies using this fallback path.
+    - Yahoo's statement coverage for smaller / thinly-traded PSX names is
+      often incomplete. If the essentials (total assets, total
+      liabilities, revenue) aren't available, this returns None rather
+      than a half-built, misleading result.
+    - This is live/current data, not a specific audited annual report —
+      unlike the curated FINANCIAL_DB entries, there's no fixed fiscal
+      year attached to it.
+    """
+    symbol = to_yahoo_symbol(ticker)
+    stock = yf.Ticker(symbol)
+
+    def safe(fn):
+        try:
+            return fn()
+        except Exception:
+            return None
+
+    info = safe(lambda: stock.info) or {}
+    bs = safe(lambda: stock.balance_sheet)
+    inc = safe(lambda: stock.financials)
+    cf = safe(lambda: stock.cashflow)
+
+    def two_years(df, *labels):
+        """First matching row label -> (most_recent_value, prior_year_value)."""
+        if df is None or df.empty:
+            return None, None
+        for label in labels:
+            if label in df.index:
+                vals = [float(v) for v in df.loc[label] if pd.notna(v)]
+                cur = vals[0] if len(vals) > 0 else None
+                prev = vals[1] if len(vals) > 1 else None
+                return cur, prev
+        return None, None
+
+    total_assets, total_assets_prev = two_years(bs, "Total Assets")
+    total_liabilities, total_liabilities_prev = two_years(
+        bs, "Total Liabilities Net Minority Interest", "Total Liab")
+    total_equity, total_equity_prev = two_years(
+        bs, "Stockholders Equity", "Total Stockholder Equity", "Common Stock Equity")
+    current_assets, current_assets_prev = two_years(
+        bs, "Current Assets", "Total Current Assets")
+    current_liabilities, current_liabilities_prev = two_years(
+        bs, "Current Liabilities", "Total Current Liabilities")
+    retained_earnings, _ = two_years(bs, "Retained Earnings")
+
+    revenue, revenue_prev = two_years(inc, "Total Revenue", "Operating Revenue")
+    net_income, net_income_prev = two_years(
+        inc, "Net Income", "Net Income Common Stockholders")
+    ebit, ebit_prev = two_years(inc, "EBIT", "Operating Income")
+    gross_profit, gross_profit_prev = two_years(inc, "Gross Profit")
+
+    operating_cash_flow, _ = two_years(
+        cf, "Operating Cash Flow", "Cash Flow From Continuing Operating Activities")
+
+    # Bare minimum to run any model at all — without these, every
+    # downstream ratio is meaningless, so bail out cleanly instead of
+    # returning a half-built result.
+    if not total_assets or not total_liabilities or not revenue:
+        return None
+
+    current_ratio = (current_assets / current_liabilities) if current_assets and current_liabilities else None
+    current_ratio_prev = (current_assets_prev / current_liabilities_prev) if current_assets_prev and current_liabilities_prev else None
+
+    gross_margin = (gross_profit / revenue) if gross_profit and revenue else info.get("grossMargins")
+    gross_margin_prev = (gross_profit_prev / revenue_prev) if gross_profit_prev and revenue_prev else None
+    net_margin = (net_income / revenue) if net_income and revenue else info.get("profitMargins")
+
+    roa = (net_income / total_assets) if net_income and total_assets else info.get("returnOnAssets")
+    roa_prev = (net_income_prev / total_assets_prev) if net_income_prev and total_assets_prev else None
+    roe = (net_income / total_equity) if net_income and total_equity else info.get("returnOnEquity")
+
+    debt_to_equity = (total_liabilities / total_equity) if total_liabilities and total_equity else info.get("debtToEquity")
+    leverage_prev = (total_liabilities_prev / total_equity_prev) if total_liabilities_prev and total_equity_prev else None
+
+    asset_turnover_prev = (revenue_prev / total_assets_prev) if revenue_prev and total_assets_prev else None
+
+    return {
+        "name": info.get("longName") or info.get("shortName") or ticker,
+        "sector": info.get("sector") or "PSX Listed",
+        "fiscal_year": None,
+        "revenue": revenue, "net_income": net_income, "ebit": ebit,
+        "gross_profit": gross_profit, "total_assets": total_assets,
+        "total_liabilities": total_liabilities, "total_equity": total_equity,
+        "current_assets": current_assets, "current_liabilities": current_liabilities,
+        "retained_earnings": retained_earnings, "operating_cash_flow": operating_cash_flow,
+        "market_cap": info.get("marketCap"), "eps": info.get("trailingEps"), "bvps": info.get("bookValue"),
+        "roe": roe, "roa": roa, "gross_margin": gross_margin,
+        "net_margin": net_margin, "current_ratio": current_ratio, "quick_ratio": info.get("quickRatio"),
+        "debt_to_equity": debt_to_equity, "interest_coverage": None,
+        "pe": info.get("trailingPE"), "pb": info.get("priceToBook"),
+        "roa_prev": roa_prev, "leverage_prev": leverage_prev,
+        "current_ratio_prev": current_ratio_prev, "gross_margin_prev": gross_margin_prev,
+        "asset_turnover_prev": asset_turnover_prev,
+        "shares_issued": False,
+    }
+
+
 def get_price_history(ticker: str, period: str = "1y") -> list:
     """
     Fetch OHLCV candlestick data for the given period.

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.services.yahoo_service import get_live_price
+from app.services.yahoo_service import get_live_price, get_full_fundamentals
+from app.routers.companies import PSX_COMPANIES
 from app.services.calculations import (
     calc_altman_zscore,
     calc_piotroski,
@@ -227,15 +228,34 @@ def analyse_company(ticker: str):
     """
     ticker = ticker.upper()
 
-    if ticker not in FINANCIAL_DB:
-        available = ", ".join(sorted(FINANCIAL_DB.keys()))
-        raise HTTPException(
-            status_code=404,
-            detail=f"{ticker} not in curated database yet. "
-                   f"Available: {available}"
-        )
+    if ticker in FINANCIAL_DB:
+        d = FINANCIAL_DB[ticker]
+        data_source = "PSX Annual Report FY2023 + Yahoo Finance (live price)"
+    else:
+        d = get_full_fundamentals(ticker)
+        if d is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No usable financial data found for {ticker} — "
+                       f"it isn't in the curated annual-report database, "
+                       f"and Yahoo Finance didn't return enough data "
+                       f"(total assets, total liabilities, revenue) to "
+                       f"run the models."
+            )
+        data_source = "Yahoo Finance (live fundamentals — not an audited annual report; some fields may be estimated or unavailable)"
 
-    d = FINANCIAL_DB[ticker]
+        # Prefer the curated sector/name from the company list over Yahoo's
+        # own classification — it's already hand-checked, consistent with
+        # what's shown in the Coverage table, and (critically) uses the
+        # "Banking" / "Islamic Banking" / "Insurance" labels the Altman
+        # bank-detection below actually looks for. Yahoo's own sector
+        # taxonomy ("Financial Services" etc.) wouldn't match those.
+        known = next((c for c in PSX_COMPANIES if c["ticker"] == ticker), None)
+        if known:
+            d["sector"] = known["sector"]
+            if not d.get("name") or d["name"] == ticker:
+                d["name"] = known["name"]
+
     sector = d["sector"]
     is_bank = any(s in sector for s in BANKING_SECTORS)
 
@@ -246,7 +266,9 @@ def analyse_company(ticker: str):
     except Exception:
         pass
 
-    market_price = live.get("price") or d.get("eps", 0) * d.get("pe", 0) or None
+    _eps_fallback = d.get("eps") or 0
+    _pe_fallback = d.get("pe") or 0
+    market_price = live.get("price") or (_eps_fallback * _pe_fallback) or None
 
     # 2. Altman Z-Score
     if is_bank:
@@ -325,22 +347,27 @@ def analyse_company(ticker: str):
         "ticker":       ticker,
         "name":         d["name"],
         "sector":       sector,
-        "fiscal_year":  d["fiscal_year"],
+        "fiscal_year":  d.get("fiscal_year"),
         "live_price":   live if live else None,
         "health":       health,
         "altman":       altman,
         "piotroski":    piotroski,
         "graham":       graham,
         "ratios":       ratios,
-        "data_source":  "PSX Annual Report FY2023 + Yahoo Finance (live price)",
+        "data_source":  data_source,
     }
 
 
 @router.get("/")
 def list_available():
-    """List all companies available for analysis."""
+    """
+    List companies with curated FY2023 annual-report data.
+    Note: this is no longer the full set of companies that CAN be analysed —
+    any ticker not in this curated list falls back to live Yahoo Finance
+    fundamentals instead of a 404. See GET /{ticker} for the actual behavior.
+    """
     return {
-        "available_tickers": sorted(FINANCIAL_DB.keys()),
-        "count": len(FINANCIAL_DB),
-        "note": "More companies will be added as PSX API access is confirmed."
+        "curated_tickers": sorted(FINANCIAL_DB.keys()),
+        "curated_count": len(FINANCIAL_DB),
+        "note": "Tickers outside this curated list are analysed live from Yahoo Finance fundamentals instead."
     }
