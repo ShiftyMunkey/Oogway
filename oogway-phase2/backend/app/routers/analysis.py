@@ -244,17 +244,18 @@ def analyse_company(ticker: str):
             )
         data_source = "Yahoo Finance (live fundamentals — not an audited annual report; some fields may be estimated or unavailable)"
 
-        # Prefer the curated sector/name from the company list over Yahoo's
-        # own classification — it's already hand-checked, consistent with
+        # Always prefer the curated sector/name from the company list over
+        # Yahoo's own values — it's already hand-checked, consistent with
         # what's shown in the Coverage table, and (critically) uses the
         # "Banking" / "Islamic Banking" / "Insurance" labels the Altman
         # bank-detection below actually looks for. Yahoo's own sector
-        # taxonomy ("Financial Services" etc.) wouldn't match those.
+        # taxonomy ("Financial Services" etc.) wouldn't match those, and
+        # Yahoo's "longName"/"shortName" fields occasionally come back as
+        # garbled internal quote metadata rather than a real company name.
         known = next((c for c in PSX_COMPANIES if c["ticker"] == ticker), None)
         if known:
             d["sector"] = known["sector"]
-            if not d.get("name") or d["name"] == ticker:
-                d["name"] = known["name"]
+            d["name"] = known["name"]
 
     sector = d["sector"]
     is_bank = any(s in sector for s in BANKING_SECTORS)

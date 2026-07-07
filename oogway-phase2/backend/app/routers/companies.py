@@ -65,7 +65,7 @@ PSX_COMPANIES = [
     {"ticker": "NCL",    "name": "Nishat Chunian",              "sector": "Textile"},
     {"ticker": "GATM",   "name": "Gul Ahmed Textile",           "sector": "Textile"},
     # Insurance
-    {"ticker": "EFU",    "name": "EFU General Insurance",       "sector": "Insurance"},
+    {"ticker": "EFUG",   "name": "EFU General Insurance",       "sector": "Insurance"},
     {"ticker": "JLICL",  "name": "Jubilee Life Insurance",      "sector": "Insurance"},
     # Aviation
     {"ticker": "PIAA",   "name": "Pakistan Intl Airlines",      "sector": "Aviation"},
