@@ -314,6 +314,10 @@ def analyse_company(ticker: str):
         eps=d.get("eps"),
         bvps=d.get("bvps"),
     )
+    # Expose the actual EPS/BVPS used so the frontend can display them
+    # even when the formula itself isn't applicable (e.g. negative EPS).
+    graham["eps"] = d.get("eps")
+    graham["bvps"] = d.get("bvps")
 
     graham_delta = None
     if graham["applicable"] and market_price:

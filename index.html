@@ -1275,7 +1275,7 @@ function adaptAnalysis(api) {
     health, verdict,
     altman: { score: api.altman?.score, zone: zone.charAt(0).toUpperCase() + zone.slice(1), label: zoneLabel },
     piotroski: { score: pioScore, max: 9, label: pioLabel },
-    graham: { eps: api.data?.eps || null, bv: api.data?.bvps || null, gn, market: mp, verdict: grahamVerdict },
+    graham: { eps: fmt(api.graham?.eps), bv: fmt(api.graham?.bvps), gn, market: mp, verdict: grahamVerdict },
     netMargin: { value: nm, benchmark: 5.0, label: nm > 15 ? 'Well above sector' : nm > 5 ? 'Above sector' : nm > 0 ? 'In line' : 'Below sector' },
     ratios: {
       Profitability: [["Net margin","≥ 5%",fmt(prof.net_margin,'%'),(prof.net_margin||0)>=5],["Gross margin","≥ 15%",fmt(prof.gross_margin,'%'),(prof.gross_margin||0)>=15],["ROE","≥ 12%",fmt(prof.roe,'%'),(prof.roe||0)>=12],["ROA","≥ 5%",fmt(prof.roa,'%'),(prof.roa||0)>=5]],
