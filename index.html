@@ -1269,7 +1269,7 @@ function adaptAnalysis(api) {
   if (pioScore <= 3) risk.push([`Weak Piotroski score (${pioScore}/9)`, 'Several quality-of-earnings criteria fail.']);
   if (grahamVerdict === 'Overvalued') risk.push(['Trading above Graham Number', 'Market price above intrinsic value estimate.']);
   if ((lev.debt_to_equity || 0) > 2) risk.push([`Debt/Equity at ${fmt(lev.debt_to_equity)}`, 'High leverage increases financial risk.']);
-  if (positive.length === 0) positive.push(['FY2023 analysis available', 'Based on curated PSX annual report data.']);
+  if (positive.length === 0) positive.push(['Full analysis available', 'Based on the latest reported PSX financial data.']);
   if (risk.length === 0) risk.push(['No major concerns identified', 'All key metrics within acceptable ranges.']);
   return {
     health, verdict,
@@ -1973,7 +1973,6 @@ function Nav({ onAnalyse, onHome, onNavLink }) {
           <a className="nav-link" href="#learn" onClick={go("learn")}>Learn</a>
         </nav>
         <div className="nav-right">
-          <span className="api-pill"><span className="pulse" />API Online</span>
           <button className="btn btn-primary" onClick={onAnalyse}>
             Analyse a company <Icon.arrow className="btn-arrow" />
           </button>
@@ -2322,7 +2321,7 @@ function DarkCTA({ onAnalyse }) {
         <div className="dark-cta-stats">
           <div className="dark-cta-stat"><span className="v">~30<span className="ac">s</span></span><span className="l">Time to full analysis</span></div>
           <div className="dark-cta-stat"><span className="v">4<span className="ac">×</span></span><span className="l">Models run per company</span></div>
-          <div className="dark-cta-stat"><span className="v">FY23</span><span className="l">Latest annual report</span></div>
+          <div className="dark-cta-stat"><span className="v">Live</span><span className="l">Real-time price refresh</span></div>
           <div className="dark-cta-stat"><span className="v">100<span className="ac">%</span></span><span className="l">Audited source data</span></div>
         </div>
       </div>
@@ -3017,7 +3016,7 @@ function Analysis({ ticker, onBack, onPick, onNavLink }) {
             <div className="badges">
               <span className="badge solid">{company.ticker}</span>
               <span className="badge">{company.sector}</span>
-              <span className="badge">FY 2023</span>
+              <span className="badge">Audited financials</span>
               <span className="badge accent">{a.verdict}</span>
             </div>
             <h1>
@@ -3330,10 +3329,22 @@ function applyHeading(name) {
   document.documentElement.style.setProperty("--display-track", f.tracking);
 }
 
+// Hash-based routing so the browser's back/forward buttons actually work.
+// #analysis/TICKER -> analysis view, #article/SLUG -> article view,
+// #section-id -> home view scrolled to that section, no hash -> home.
+function parseRoute() {
+  const h = window.location.hash.replace(/^#/, "");
+  if (h.startsWith("analysis/")) return { view: "analysis", ticker: decodeURIComponent(h.slice(9)) };
+  if (h.startsWith("article/")) return { view: "article", lesson: decodeURIComponent(h.slice(8)) };
+  if (h) return { view: "home", anchor: h };
+  return { view: "home" };
+}
+
 function App() {
-  const [view, setView] = useStateApp("home"); // "home" | "analysis" | "article"
-  const [selected, setSelected] = useStateApp("PSO");
-  const [selectedLesson, setSelectedLesson] = useStateApp("what-is-psx");
+  const initialRoute = parseRoute();
+  const [view, setView] = useStateApp(initialRoute.view); // "home" | "analysis" | "article"
+  const [selected, setSelected] = useStateApp(initialRoute.ticker || "PSO");
+  const [selectedLesson, setSelectedLesson] = useStateApp(initialRoute.lesson || "what-is-psx");
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
   useEffectApp(() => { applyPalette(tweaks.palette); }, [tweaks.palette]);
@@ -3343,34 +3354,51 @@ function App() {
       tweaks.density === "compact" ? "clamp(56px, 7vw, 96px)" : "clamp(72px, 9vw, 128px)");
   }, [tweaks.density]);
 
-  const [pendingAnchor, setPendingAnchor] = useStateApp(null);
-
-  const openAnalysis = (t) => {
-    if (t) setSelected(t);
-    setView("analysis");
-  };
-  const openArticle = (slug) => {
-    setSelectedLesson(slug);
-    setView("article");
-    window.scrollTo(0, 0);
-  };
-  const goHome = () => setView("home");
+  const [pendingAnchor, setPendingAnchor] = useStateApp(initialRoute.anchor || null);
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // Single place that both updates React state AND (optionally) pushes a
+  // browser history entry. popstate (back/forward) calls this with
+  // push:false so it just re-syncs state instead of creating new entries.
+  const applyRoute = (route, push = true) => {
+    setView(route.view);
+    if (route.ticker) setSelected(route.ticker);
+    if (route.lesson) setSelectedLesson(route.lesson);
+    if (route.view === "home" && route.anchor) setPendingAnchor(route.anchor);
+
+    if (push) {
+      const base = window.location.pathname + window.location.search;
+      const hash =
+        route.view === "analysis" ? "#analysis/" + (route.ticker || selected) :
+        route.view === "article"  ? "#article/" + (route.lesson || selectedLesson) :
+        route.anchor ? "#" + route.anchor : "";
+      history.pushState(null, "", base + hash);
+    }
+  };
+
+  const openAnalysis = (t) => applyRoute({ view: "analysis", ticker: t || selected });
+  const openArticle = (slug) => {
+    applyRoute({ view: "article", lesson: slug });
+    window.scrollTo(0, 0);
+  };
+  const goHome = () => applyRoute({ view: "home" });
+
   // Nav links must work from any view: if already home, scroll directly;
   // otherwise navigate home first and scroll once the section has mounted.
   const goToSection = (id) => {
-    if (view === "home") {
-      scrollToSection(id);
-    } else {
-      setPendingAnchor(id);
-      setView("home");
-    }
+    if (view === "home") scrollToSection(id);
+    applyRoute({ view: "home", anchor: id });
   };
+
+  useEffectApp(() => {
+    const onPop = () => applyRoute(parseRoute(), false);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   useEffectApp(() => {
     if (view === "home" && pendingAnchor) {

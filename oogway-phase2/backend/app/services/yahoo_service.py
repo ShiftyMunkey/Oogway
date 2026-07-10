@@ -205,6 +205,13 @@ def get_live_price(ticker: str) -> dict:
     Uses 1-minute interval data — gives the most recent available price.
     15-20 min delayed on Yahoo Finance free tier.
     Falls back to daily close if intraday is unavailable.
+
+    Change/change% are computed against the previous trading SESSION's
+    close, not the previous 1-minute bar. Comparing against the previous
+    minute was the original approach here, but thinly-traded PSX names
+    often go several minutes between trades, so consecutive 1-minute bars
+    frequently repeat the same close price — that made change% read as
+    +0.00% almost constantly, which was wrong, not just imprecise.
     """
     symbol = to_yahoo_symbol(ticker)
     stock = yf.Ticker(symbol)
@@ -213,16 +220,31 @@ def get_live_price(ticker: str) -> dict:
     interval_used = "1m"
 
     if hist.empty:
-        hist = stock.history(period="2d", interval="1d")
+        hist = stock.history(period="5d", interval="1d")
         interval_used = "1d"
         if hist.empty:
             return {}
 
     latest = hist.iloc[-1]
-    prev = hist.iloc[-2] if len(hist) > 1 else None
-
     price = round(float(latest["Close"]), 2)
-    prev_close = round(float(prev["Close"]), 2) if prev is not None else price
+
+    # Previous close always comes from the daily series, independent of
+    # what interval "price" itself came from.
+    daily = stock.history(period="5d", interval="1d")
+    prev_close = None
+    if not daily.empty:
+        latest_date = latest.name.date() if hasattr(latest.name, "date") else None
+        same_day_as_latest = (
+            latest_date is not None
+            and daily.index[-1].date() == latest_date
+        )
+        if same_day_as_latest and len(daily) > 1:
+            prev_close = round(float(daily["Close"].iloc[-2]), 2)
+        elif not same_day_as_latest:
+            prev_close = round(float(daily["Close"].iloc[-1]), 2)
+    if prev_close is None:
+        prev_close = price
+
     change = round(price - prev_close, 2)
     change_pct = round((change / prev_close) * 100, 2) if prev_close else 0
 
