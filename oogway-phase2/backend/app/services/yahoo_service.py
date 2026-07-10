@@ -142,6 +142,21 @@ def get_full_fundamentals(ticker: str) -> Optional[dict]:
 
     asset_turnover_prev = (revenue_prev / total_assets_prev) if revenue_prev and total_assets_prev else None
 
+    # Yahoo's PSX (.KA) listings very often omit trailingEps/bookValue even
+    # when trailingPE/priceToBook are present. Since PE = price/eps and
+    # PB = price/bvps, we can back out eps/bvps from the ratios Yahoo does
+    # provide instead of silently losing the Graham Number for almost every
+    # company (which is what was happening before this fallback existed).
+    eps = info.get("trailingEps")
+    bvps = info.get("bookValue")
+    pe_val = info.get("trailingPE")
+    pb_val = info.get("priceToBook")
+    price_hint = info.get("currentPrice") or info.get("regularMarketPrice")
+    if (not eps or eps <= 0) and price_hint and pe_val and pe_val > 0:
+        eps = round(price_hint / pe_val, 2)
+    if (not bvps or bvps <= 0) and price_hint and pb_val and pb_val > 0:
+        bvps = round(price_hint / pb_val, 2)
+
     return {
         "name": info.get("longName") or info.get("shortName") or ticker,
         "sector": info.get("sector") or "PSX Listed",
@@ -151,11 +166,11 @@ def get_full_fundamentals(ticker: str) -> Optional[dict]:
         "total_liabilities": total_liabilities, "total_equity": total_equity,
         "current_assets": current_assets, "current_liabilities": current_liabilities,
         "retained_earnings": retained_earnings, "operating_cash_flow": operating_cash_flow,
-        "market_cap": info.get("marketCap"), "eps": info.get("trailingEps"), "bvps": info.get("bookValue"),
+        "market_cap": info.get("marketCap"), "eps": eps, "bvps": bvps,
         "roe": roe, "roa": roa, "gross_margin": gross_margin,
         "net_margin": net_margin, "current_ratio": current_ratio, "quick_ratio": info.get("quickRatio"),
         "debt_to_equity": debt_to_equity, "interest_coverage": None,
-        "pe": info.get("trailingPE"), "pb": info.get("priceToBook"),
+        "pe": pe_val, "pb": pb_val,
         "roa_prev": roa_prev, "leverage_prev": leverage_prev,
         "current_ratio_prev": current_ratio_prev, "gross_margin_prev": gross_margin_prev,
         "asset_turnover_prev": asset_turnover_prev,
