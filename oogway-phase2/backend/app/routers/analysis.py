@@ -223,26 +223,17 @@ BANKING_SECTORS = ["Banking", "Islamic Banking", "Insurance"]
 def analyse_company(ticker: str):
     """
     Full financial analysis for a PSX company.
-    Uses curated FY2023 annual report data for calculations,
-    and fetches the live price from Yahoo Finance to add on top.
+    Always tries live Yahoo Finance fundamentals first, so every company —
+    including the originally-curated ones — is analysed against the latest
+    fiscal year Yahoo has reported, not a fixed FY2023 snapshot. The
+    hand-curated FINANCIAL_DB is now only a safety-net fallback for the
+    rare case where Yahoo doesn't return enough data to run the models.
     """
     ticker = ticker.upper()
 
-    if ticker in FINANCIAL_DB:
-        d = FINANCIAL_DB[ticker]
-        data_source = "PSX Annual Report FY2023 + Yahoo Finance (live price)"
-    else:
-        d = get_full_fundamentals(ticker)
-        if d is None:
-            raise HTTPException(
-                status_code=404,
-                detail=f"No usable financial data found for {ticker} — "
-                       f"it isn't in the curated annual-report database, "
-                       f"and Yahoo Finance didn't return enough data "
-                       f"(total assets, total liabilities, revenue) to "
-                       f"run the models."
-            )
-        data_source = "Yahoo Finance (live fundamentals — not an audited annual report; some fields may be estimated or unavailable)"
+    d = get_full_fundamentals(ticker)
+    if d is not None:
+        data_source = "Yahoo Finance (live fundamentals, latest reported fiscal year; some fields may be estimated or unavailable)"
 
         # Always prefer the curated sector/name from the company list over
         # Yahoo's own values — it's already hand-checked, consistent with
@@ -256,6 +247,18 @@ def analyse_company(ticker: str):
         if known:
             d["sector"] = known["sector"]
             d["name"] = known["name"]
+    elif ticker in FINANCIAL_DB:
+        d = FINANCIAL_DB[ticker]
+        data_source = "PSX Annual Report FY2023 (curated fallback — Yahoo Finance didn't return enough live fundamentals for this company)"
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No usable financial data found for {ticker} — "
+                   f"Yahoo Finance didn't return enough data "
+                   f"(total assets, total liabilities, revenue) to "
+                   f"run the models, and it isn't in the curated "
+                   f"annual-report fallback database either."
+        )
 
     sector = d["sector"]
     is_bank = any(s in sector for s in BANKING_SECTORS)
@@ -362,13 +365,13 @@ def analyse_company(ticker: str):
 @router.get("/")
 def list_available():
     """
-    List companies with curated FY2023 annual-report data.
-    Note: this is no longer the full set of companies that CAN be analysed —
-    any ticker not in this curated list falls back to live Yahoo Finance
-    fundamentals instead of a 404. See GET /{ticker} for the actual behavior.
+    List companies with a curated FY2023 fallback available.
+    Every company is analysed live from Yahoo Finance first (GET /{ticker});
+    this curated set is only used as a safety net if Yahoo doesn't return
+    enough data for that specific company.
     """
     return {
-        "curated_tickers": sorted(FINANCIAL_DB.keys()),
-        "curated_count": len(FINANCIAL_DB),
-        "note": "Tickers outside this curated list are analysed live from Yahoo Finance fundamentals instead."
+        "fallback_tickers": sorted(FINANCIAL_DB.keys()),
+        "fallback_count": len(FINANCIAL_DB),
+        "note": "All companies are analysed live from Yahoo Finance fundamentals first. This curated set only kicks in as a fallback if Yahoo data is insufficient."
     }
