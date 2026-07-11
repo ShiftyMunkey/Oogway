@@ -1232,6 +1232,26 @@ button.feature { cursor: pointer; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
+/* === Analysis loading state === */
+.loader-wrap {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 22px; min-height: 50vh; padding: 40px 20px; text-align: center;
+}
+.loader-ring {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: 3px solid var(--rule-2); border-top-color: var(--accent);
+  animation: loader-spin 0.85s linear infinite;
+}
+@keyframes loader-spin { to { transform: rotate(360deg); } }
+.loader-text {
+  font-family: var(--font-mono); font-size: 13.5px; color: var(--ink-2);
+  letter-spacing: 0.02em; min-height: 20px; transition: opacity 0.15s ease;
+}
+.loader-ticker {
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3);
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+
 /* === Print (PDF export) === */
 @media print {
   /* Clean, ink-friendly light theme regardless of the active palette */
@@ -3035,6 +3055,28 @@ function HealthDial({ score }) {
   );
 }
 
+const LOADING_STEPS = [
+  "Fetching live price…",
+  "Running Altman Z-Score…",
+  "Calculating Piotroski F-Score…",
+  "Checking Graham Number…",
+  "Scoring sector-relative margin…",
+];
+function AnalysisLoading({ label }) {
+  const [step, setStep] = useStateA(0);
+  useEffectA(() => {
+    const id = setInterval(() => setStep(s => (s + 1) % LOADING_STEPS.length), 650);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="loader-wrap">
+      <div className="loader-ring" />
+      <div className="loader-text">{LOADING_STEPS[step]}</div>
+      {label ? <div className="loader-ticker">{label}</div> : null}
+    </div>
+  );
+}
+
 function Analysis({ ticker, onBack, onPick, onNavLink, onCompare }) {
   const [a, setA] = useStateA(PSX_ANALYSIS[ticker] || null);
   const [loading, setLoading] = useStateA(!PSX_ANALYSIS[ticker]);
@@ -3082,8 +3124,8 @@ function Analysis({ ticker, onBack, onPick, onNavLink, onCompare }) {
   if (loading) return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
       <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
-      <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--ink-3)',fontSize:13,letterSpacing:'0.04em'}}>
-        Loading analysis for {ticker}…
+      <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center'}}>
+        <AnalysisLoading label={ticker} />
       </div>
     </div>
   );
@@ -3428,9 +3470,7 @@ function Compare({ tickerA, tickerB, onChangeA, onChangeB, onBack, onNavLink, on
         </div>
 
         {loading ? (
-          <div style={{ padding: "60px 0", textAlign: "center", color: "var(--ink-3)", fontSize: 13 }}>
-            Loading comparison for {tickerA} vs {tickerB}…
-          </div>
+          <AnalysisLoading label={tickerA + " vs " + tickerB} />
         ) : (errA || errB || !dataA || !dataB) ? (
           <div style={{ padding: "60px 0", textAlign: "center", color: "var(--ink-3)", fontSize: 13 }}>
             Could not load one or both companies. {errA || errB}
@@ -3499,7 +3539,7 @@ function Compare({ tickerA, tickerB, onChangeA, onChangeB, onBack, onNavLink, on
   );
 }
 
-Object.assign(window, { Analysis, adaptAnalysis, Compare });
+Object.assign(window, { Analysis, adaptAnalysis, Compare, AnalysisLoading });
 
   </script>
 
