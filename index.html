@@ -31,6 +31,11 @@
   --pos:      #0E7B5E;
   --neg:      #B6422A;
   --warn:     #B07B1F;
+  /* Plain-RGB companions for --neg/--warn — used wherever we need a tinted
+     transparent background (rgba(var(--x-rgb), alpha)) instead of
+     color-mix(), which html2canvas (used for PDF export) can't parse. */
+  --neg-rgb:  182, 66, 42;
+  --warn-rgb: 176, 123, 31;
   --on-dark:  #F4F1EA;
   --on-dark-2:#A8A59D;
 
@@ -756,8 +761,8 @@ section { padding: var(--section-y) 0; }
   background: var(--accent-soft);
   color: var(--accent);
 }
-.model .pill.neg { background: color-mix(in oklab, var(--neg) 12%, transparent); color: var(--neg); }
-.model .pill.warn { background: color-mix(in oklab, var(--warn) 14%, transparent); color: var(--warn); }
+.model .pill.neg { background: rgba(var(--neg-rgb), 0.12); color: var(--neg); }
+.model .pill.warn { background: rgba(var(--warn-rgb), 0.14); color: var(--warn); }
 .model .desc { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; }
 
 /* FLAGS */
@@ -892,7 +897,7 @@ section { padding: var(--section-y) 0; }
   background: var(--accent-soft);
   color: var(--accent);
 }
-.check.no .mk { background: color-mix(in oklab, var(--neg) 10%, transparent); color: var(--neg); }
+.check.no .mk { background: rgba(var(--neg-rgb), 0.10); color: var(--neg); }
 .check.no .nm { color: var(--ink-3); }
 
 /* GRAHAM */
@@ -1263,6 +1268,7 @@ button.feature { cursor: pointer; }
     --rule: #e2e0da; --rule-2: #d3d1c9;
     --accent: #9a6a1f; --accent-soft: #f2e6cf;
     --neg: #a8412a; --warn: #a8791f;
+    --neg-rgb: 168, 65, 42; --warn-rgb: 168, 121, 31;
   }
   .no-print, .no-print * { display: none !important; }
   body { background: #fff !important; }
@@ -1330,6 +1336,7 @@ window.OOGWAY_PDF_PALETTE = {
   "--rule": "#e2e0da", "--rule-2": "#d3d1c9",
   "--accent": "#9a6a1f", "--accent-soft": "#f2e6cf",
   "--neg": "#a8412a", "--warn": "#a8791f",
+  "--neg-rgb": "168, 65, 42", "--warn-rgb": "168, 121, 31",
 };
 
 window.downloadReportPdf = function (node, filename) {
@@ -1362,7 +1369,7 @@ window.downloadReportPdf = function (node, filename) {
         y: margin,
         width: pageWidth - margin * 2,
         windowWidth: node.scrollWidth,
-        html2canvas: { scale: 2, backgroundColor: "#ffffff", useCORS: true },
+        html2canvas: { scale: 2, backgroundColor: "#ffffff", useCORS: true, logging: false },
         callback: (doc) => {
           restore();
           try {
@@ -1377,6 +1384,15 @@ window.downloadReportPdf = function (node, filename) {
       restore();
       reject(e);
     }
+
+    // Safety net: jsPDF's .html() doesn't always propagate an html2canvas
+    // rejection (e.g. an unsupported CSS color function) — it can hang
+    // forever instead of calling back. If nothing has settled after 20s,
+    // restore the palette and reject so callers can fall back to print().
+    setTimeout(() => {
+      restore();
+      reject(new Error("PDF generation timed out"));
+    }, 20000);
   });
 };
 
