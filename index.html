@@ -823,6 +823,42 @@ section { padding: var(--section-y) 0; }
 .ratio-row .ok { width: 16px; height: 16px; display: grid; place-items: center; color: var(--accent); }
 .ratio-row .ok.no { color: var(--neg); }
 
+/* COMPARE VIEW */
+.compare-head {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 24px;
+  padding: clamp(28px, 4vw, 48px) 0;
+}
+@media (max-width: 700px) { .compare-head { grid-template-columns: 1fr; } }
+.compare-side { display: flex; flex-direction: column; gap: 10px; }
+.compare-side-lab {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+}
+.compare-vs {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.1em; color: var(--ink-3); padding-bottom: 14px;
+}
+@media (max-width: 700px) { .compare-vs { padding-bottom: 0; text-align: center; } }
+.compare-table {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.compare-table-head, .compare-table-row {
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 12px; padding: 13px 18px; align-items: center;
+}
+.compare-table-head {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3); background: var(--bg); border-bottom: 1px solid var(--rule);
+}
+.compare-table-row { border-bottom: 1px solid var(--rule); font-size: 13.5px; }
+.compare-table-row:last-child { border-bottom: 0; }
+.compare-table-row .lab { color: var(--ink-2); }
+.compare-table-row .val { font-family: var(--font-mono); font-size: 13.5px; color: var(--ink); }
+.compare-table-row .val.win { color: var(--accent); font-weight: 600; }
+
 /* PIOTROSKI CHECKLIST */
 .piotroski-card {
   background: var(--bg-elev);
@@ -1970,7 +2006,7 @@ const fmtPrice = (n) => {
 const fmtPct = (n) => (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
 
 /* ------- Nav ------- */
-function Nav({ onAnalyse, onHome, onNavLink }) {
+function Nav({ onAnalyse, onHome, onNavLink, onCompare }) {
   const go = (id) => (e) => {
     e.preventDefault();
     if (onNavLink) onNavLink(id);
@@ -1987,6 +2023,7 @@ function Nav({ onAnalyse, onHome, onNavLink }) {
           <a className="nav-link" href="#coverage" onClick={go("coverage")}>Coverage</a>
           <a className="nav-link" href="#methodology" onClick={go("methodology")}>Methodology</a>
           <a className="nav-link" href="#learn" onClick={go("learn")}>Learn</a>
+          {onCompare && <a className="nav-link" href="#compare" onClick={(e) => { e.preventDefault(); onCompare(); }}>Compare</a>}
         </nav>
         <div className="nav-right">
           <button className="btn btn-primary" onClick={onAnalyse}>
@@ -2811,7 +2848,7 @@ function CandleDiagram() {
 }
 
 /* ------- Article (full lesson view) ------- */
-function Article({ slug, onBack, onNavLink }) {
+function Article({ slug, onBack, onNavLink, onCompare }) {
   const ALL_ARTICLES = LESSONS.concat(ALGO_ARTICLES);
   const lesson = ALL_ARTICLES.find(l => l.slug === slug) || ALL_ARTICLES[0];
   const isAlgo = ALGO_ARTICLES.some(a => a.slug === lesson.slug);
@@ -2819,7 +2856,7 @@ function Article({ slug, onBack, onNavLink }) {
   const lvlClass = (l) => l === "Beginner" ? "lvl-1" : l === "Intermediate" ? "lvl-2" : "lvl-3";
   return (
     <div className="analysis-shell">
-      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} />
+      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
       <div className="container">
         <div className="analysis-bar">
           <div className="left">
@@ -2913,7 +2950,7 @@ function LiteracyHub({ onOpenArticle }) {
 function Landing(props) {
   return (
     <>
-      <Nav onAnalyse={props.onAnalyse} onHome={props.onHome} onNavLink={props.onNavLink} />
+      <Nav onAnalyse={props.onAnalyse} onHome={props.onHome} onNavLink={props.onNavLink} onCompare={props.onCompare} />
       <Ticker />
       <Hero {...props} />
       <Stats />
@@ -2932,7 +2969,7 @@ function Landing(props) {
 Object.assign(window, {
   Landing, Nav, Ticker, Hero, Stats, HowItWorks, Methodology, Coverage, DarkCTA, Footer,
   Features, LiveCharts, LiteracyHub, LESSONS, ALGO_ARTICLES, Article, CandleDiagram,
-  Icon, fmtPrice, fmtPct,
+  Icon, fmtPrice, fmtPct, CompanyDropdown,
 });
 
   </script>
@@ -2969,7 +3006,7 @@ function HealthDial({ score }) {
   );
 }
 
-function Analysis({ ticker, onBack, onPick, onNavLink }) {
+function Analysis({ ticker, onBack, onPick, onNavLink, onCompare }) {
   const [a, setA] = useStateA(PSX_ANALYSIS[ticker] || null);
   const [loading, setLoading] = useStateA(!PSX_ANALYSIS[ticker]);
 
@@ -3015,7 +3052,7 @@ function Analysis({ ticker, onBack, onPick, onNavLink }) {
   // Single return — no early returns (prevents React hooks order violation)
   if (loading) return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
-      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} />
+      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
       <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--ink-3)',fontSize:13,letterSpacing:'0.04em'}}>
         Loading analysis for {ticker}…
       </div>
@@ -3023,7 +3060,7 @@ function Analysis({ ticker, onBack, onPick, onNavLink }) {
   );
   if (error || !a || !company) return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column'}}>
-      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} />
+      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
       <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,color:'var(--ink-3)',fontSize:13}}>
         <div style={{fontSize:15,color:'var(--ink)'}}>Could not load analysis for {ticker}</div>
         <div>{error || 'No data returned from API'}</div>
@@ -3034,7 +3071,7 @@ function Analysis({ ticker, onBack, onPick, onNavLink }) {
 
   return (
     <div className="analysis-shell">
-      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} />
+      <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
 
       <div className="container">
         <div className="analysis-bar">
@@ -3242,7 +3279,7 @@ function Analysis({ ticker, onBack, onPick, onNavLink }) {
           <div className="head"><h3>Compare another company</h3><span className="meta">Full coverage</span></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
             {PSX_COMPANIES.filter(c => c.ticker !== ticker).map(c => (
-              <button key={c.ticker} className="selector-row" onClick={() => onPick(c.ticker)} style={{ textAlign: "left" }}>
+              <button key={c.ticker} className="selector-row" onClick={() => onCompare(ticker, c.ticker)} style={{ textAlign: "left" }}>
                 <span className="selector-ticker">{c.ticker}</span>
                 <span className="selector-name">{c.name}</span>
               </button>
@@ -3267,7 +3304,169 @@ function Analysis({ ticker, onBack, onPick, onNavLink }) {
   );
 }
 
-Object.assign(window, { Analysis, adaptAnalysis });
+/* ------- Comparative analysis (2 companies side by side) ------- */
+const RATIO_LOWER_IS_BETTER = new Set(["Debt / Equity", "P/E", "P/B"]);
+function ratioWinner(nm, vlA, vlB) {
+  const nA = parseFloat(vlA), nB = parseFloat(vlB);
+  if (!isFinite(nA) || !isFinite(nB) || nA === nB) return null;
+  return RATIO_LOWER_IS_BETTER.has(nm) ? (nA < nB ? "A" : "B") : (nA > nB ? "A" : "B");
+}
+function numWinner(a, b, lowerIsBetter) {
+  if (typeof a !== "number" || typeof b !== "number" || a === b) return null;
+  return lowerIsBetter ? (a < b ? "A" : "B") : (a > b ? "A" : "B");
+}
+
+function Compare({ tickerA, tickerB, onChangeA, onChangeB, onBack, onNavLink, onAnalyse, onCompare }) {
+  const [dataA, setDataA] = useStateA(PSX_ANALYSIS[tickerA] || null);
+  const [dataB, setDataB] = useStateA(PSX_ANALYSIS[tickerB] || null);
+  const [loadingA, setLoadingA] = useStateA(!PSX_ANALYSIS[tickerA]);
+  const [loadingB, setLoadingB] = useStateA(!PSX_ANALYSIS[tickerB]);
+  const [errA, setErrA] = useStateA(null);
+  const [errB, setErrB] = useStateA(null);
+
+  const load = (ticker, setData, setLoading, setErr) => {
+    setErr(null);
+    if (PSX_ANALYSIS[ticker]) { setData(PSX_ANALYSIS[ticker]); setLoading(false); return; }
+    setLoading(true);
+    fetch(window.OOGWAY_API + '/api/analysis/' + ticker)
+      .then(r => { if (!r.ok) throw new Error('API returned ' + r.status); return r.json(); })
+      .then(apiData => {
+        const adapted = adaptAnalysis(apiData);
+        window.PSX_ANALYSIS[ticker] = adapted;
+        if (apiData.live_price?.price) {
+          const co = window.PSX_COMPANIES.find(c => c.ticker === ticker);
+          if (co) { co.price = apiData.live_price.price; co.change = apiData.live_price.change || 0; co.changePct = apiData.live_price.change_pct || 0; }
+        }
+        setData(adapted);
+        setLoading(false);
+      })
+      .catch(err => { setErr(err.message || 'Failed to load'); setLoading(false); });
+  };
+
+  useEffectA(() => { load(tickerA, setDataA, setLoadingA, setErrA); }, [tickerA]);
+  useEffectA(() => { load(tickerB, setDataB, setLoadingB, setErrB); }, [tickerB]);
+  useEffectA(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, []);
+
+  const coA = PSX_COMPANIES.find(c => c.ticker === tickerA);
+  const coB = PSX_COMPANIES.find(c => c.ticker === tickerB);
+  const loading = loadingA || loadingB;
+  const ready = !loading && dataA && dataB && coA && coB && !errA && !errB;
+
+  const keyRows = ready ? [
+    ["Health score", dataA.health + "/100", dataB.health + "/100", numWinner(dataA.health, dataB.health)],
+    ["Altman Z-Score",
+      typeof dataA.altman.score === "number" ? dataA.altman.score.toFixed(2) : dataA.altman.label,
+      typeof dataB.altman.score === "number" ? dataB.altman.score.toFixed(2) : dataB.altman.label,
+      numWinner(typeof dataA.altman.score === "number" ? dataA.altman.score : null, typeof dataB.altman.score === "number" ? dataB.altman.score : null)],
+    ["Piotroski F-Score", dataA.piotroski.score + "/9", dataB.piotroski.score + "/9", numWinner(dataA.piotroski.score, dataB.piotroski.score)],
+    ["Net margin", dataA.netMargin.value + "%", dataB.netMargin.value + "%", numWinner(dataA.netMargin.value, dataB.netMargin.value)],
+    ["Graham verdict", dataA.graham.verdict, dataB.graham.verdict, null],
+    ["Live price", "PKR " + fmtPrice(coA.price || 0), "PKR " + fmtPrice(coB.price || 0), null],
+    ["Today's change", fmtPct(coA.changePct || 0), fmtPct(coB.changePct || 0), null],
+  ] : [];
+
+  return (
+    <div className="analysis-shell">
+      <Nav onAnalyse={onAnalyse} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
+
+      <div className="container">
+        <div className="analysis-bar">
+          <div className="left">
+            <button className="back" onClick={onBack}>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 8H3M7 4L3 8l4 4" />
+              </svg>
+              Back to home
+            </button>
+            <span className="crumb">Compare · {tickerA} vs {tickerB}</span>
+          </div>
+        </div>
+
+        <div className="compare-head">
+          <div className="compare-side">
+            <span className="compare-side-lab">Company A</span>
+            <CompanyDropdown value={tickerA} onChange={onChangeA} />
+          </div>
+          <div className="compare-vs">VS</div>
+          <div className="compare-side">
+            <span className="compare-side-lab">Company B</span>
+            <CompanyDropdown value={tickerB} onChange={onChangeB} />
+          </div>
+        </div>
+
+        {loading ? (
+          <div style={{ padding: "60px 0", textAlign: "center", color: "var(--ink-3)", fontSize: 13 }}>
+            Loading comparison for {tickerA} vs {tickerB}…
+          </div>
+        ) : (errA || errB || !dataA || !dataB) ? (
+          <div style={{ padding: "60px 0", textAlign: "center", color: "var(--ink-3)", fontSize: 13 }}>
+            Could not load one or both companies. {errA || errB}
+          </div>
+        ) : (
+          <>
+            <div className="a-section" style={{ paddingTop: 0 }}>
+              <div className="head"><h3>Head to head</h3><span className="meta">Key metrics</span></div>
+              <div className="compare-table">
+                <div className="compare-table-head">
+                  <span></span><span>{tickerA}</span><span>{tickerB}</span>
+                </div>
+                {keyRows.map(([label, vA, vB, winner], i) => (
+                  <div className="compare-table-row" key={i}>
+                    <span className="lab">{label}</span>
+                    <span className={"val" + (winner === "A" ? " win" : "")}>{vA}</span>
+                    <span className={"val" + (winner === "B" ? " win" : "")}>{vB}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="a-section">
+              <div className="head"><h3>Ratio breakdown</h3><span className="meta">Grouped · side by side</span></div>
+              <div style={{ display: "grid", gap: 16 }}>
+                {Object.entries(dataA.ratios).map(([group, rowsA]) => {
+                  const rowsB = dataB.ratios[group] || [];
+                  return (
+                    <div className="compare-table" key={group}>
+                      <div className="compare-table-head">
+                        <span>{group}</span><span>{tickerA}</span><span>{tickerB}</span>
+                      </div>
+                      {rowsA.map(([nm, bm, vlA], i) => {
+                        const rowB = rowsB[i] || [];
+                        const vlB = rowB[2];
+                        const winner = ratioWinner(nm, vlA, vlB);
+                        return (
+                          <div className="compare-table-row" key={nm}>
+                            <span className="lab">{nm} <span style={{ color: "var(--ink-3)", fontSize: 11 }}>({bm})</span></span>
+                            <span className={"val" + (winner === "A" ? " win" : "")}>{vlA}</span>
+                            <span className={"val" + (winner === "B" ? " win" : "")}>{vlB}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="analysis-foot">
+              <button className="btn btn-ghost" onClick={onBack}>
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M13 8H3M7 4L3 8l4 4" /></svg>
+                Back to home
+              </button>
+              <span className="mono" style={{ fontSize: 11, color: "var(--ink-3)", letterSpacing: "0.04em" }}>
+                For informational purposes only. Not financial advice.
+              </span>
+            </div>
+          </>
+        )}
+      </div>
+
+      <Footer />
+    </div>
+  );
+}
+
+Object.assign(window, { Analysis, adaptAnalysis, Compare });
 
   </script>
 
@@ -3378,6 +3577,10 @@ function parseRoute() {
   const h = window.location.hash.replace(/^#/, "");
   if (h.startsWith("analysis/")) return { view: "analysis", ticker: decodeURIComponent(h.slice(9)) };
   if (h.startsWith("article/")) return { view: "article", lesson: decodeURIComponent(h.slice(8)) };
+  if (h.startsWith("compare/")) {
+    const [ta, tb] = decodeURIComponent(h.slice(8)).split("-");
+    return { view: "compare", tickerA: ta || null, tickerB: tb || null };
+  }
   if (h) return { view: "home", anchor: h };
   return { view: "home" };
 }
@@ -3387,6 +3590,8 @@ function App() {
   const [view, setView] = useStateApp(initialRoute.view); // "home" | "analysis" | "article"
   const [selected, setSelected] = useStateApp(initialRoute.ticker || "PSO");
   const [selectedLesson, setSelectedLesson] = useStateApp(initialRoute.lesson || "what-is-psx");
+  const [compareA, setCompareA] = useStateApp(initialRoute.tickerA || "PSO");
+  const [compareB, setCompareB] = useStateApp(initialRoute.tickerB || "OGDC");
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
   useEffectApp(() => { applyPalette(tweaks.palette); }, [tweaks.palette]);
@@ -3410,6 +3615,10 @@ function App() {
     setView(route.view);
     if (route.ticker) setSelected(route.ticker);
     if (route.lesson) setSelectedLesson(route.lesson);
+    if (route.view === "compare") {
+      if (route.tickerA) setCompareA(route.tickerA);
+      if (route.tickerB) setCompareB(route.tickerB);
+    }
     if (route.view === "home" && route.anchor) setPendingAnchor(route.anchor);
 
     if (push) {
@@ -3417,6 +3626,7 @@ function App() {
       const hash =
         route.view === "analysis" ? "#analysis/" + (route.ticker || selected) :
         route.view === "article"  ? "#article/" + (route.lesson || selectedLesson) :
+        route.view === "compare"  ? "#compare/" + (route.tickerA || compareA) + "-" + (route.tickerB || compareB) :
         route.anchor ? "#" + route.anchor : "";
       history.pushState(null, "", base + hash);
     }
@@ -3425,6 +3635,10 @@ function App() {
   const openAnalysis = (t) => applyRoute({ view: "analysis", ticker: t || selected });
   const openArticle = (slug) => {
     applyRoute({ view: "article", lesson: slug });
+    window.scrollTo(0, 0);
+  };
+  const openCompare = (a, b) => {
+    applyRoute({ view: "compare", tickerA: a || compareA, tickerB: b || compareB });
     window.scrollTo(0, 0);
   };
   const goHome = () => applyRoute({ view: "home" });
@@ -3461,13 +3675,25 @@ function App() {
           onHome={goHome}
           onNavLink={goToSection}
           onOpenArticle={openArticle}
+          onCompare={openCompare}
           heroVariant={tweaks.heroVariant}
         />
       ) : view === "article" ? (
-        <Article slug={selectedLesson} onBack={goHome} onNavLink={goToSection} />
+        <Article slug={selectedLesson} onBack={goHome} onNavLink={goToSection} onCompare={openCompare} />
+      ) : view === "compare" ? (
+        <Compare
+          tickerA={compareA}
+          tickerB={compareB}
+          onChangeA={(t) => openCompare(t, compareB)}
+          onChangeB={(t) => openCompare(compareA, t)}
+          onBack={goHome}
+          onNavLink={goToSection}
+          onAnalyse={() => openAnalysis()}
+          onCompare={openCompare}
+        />
       ) : (
         <AnalysisBoundary onBack={goHome}>
-          <Analysis ticker={selected} onBack={goHome} onPick={openAnalysis} onNavLink={goToSection} />
+          <Analysis ticker={selected} onBack={goHome} onPick={openAnalysis} onNavLink={goToSection} onCompare={openCompare} />
         </AnalysisBoundary>
       )}
 
