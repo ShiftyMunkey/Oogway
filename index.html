@@ -1281,17 +1281,19 @@ button.feature { cursor: pointer; }
   <div id="root"></div>
 
   <script>
-// PSX universe — companies confirmed working end-to-end (analysis + live price)
+// PSX universe — companies confirmed working end-to-end (analysis + live price).
+// This seed list only renders before /api/companies/ responds (see below,
+// which overwrites name/sector for every ticker so this never goes stale).
 window.PSX_COMPANIES = [
-  { ticker: "PSO",    name: "Pakistan State Oil",              sector: "Oil & Gas Marketing",      price: 0, change: 0, changePct: 0 },
-  { ticker: "OGDC",   name: "Oil & Gas Development",           sector: "Exploration & Production", price: 0, change: 0, changePct: 0 },
-  { ticker: "LUCK",   name: "Lucky Cement",                    sector: "Cement",                   price: 0, change: 0, changePct: 0 },
-  { ticker: "HBL",    name: "Habib Bank Limited",              sector: "Commercial Banks",         price: 0, change: 0, changePct: 0 },
-  { ticker: "MCB",    name: "MCB Bank",                        sector: "Commercial Banks",         price: 0, change: 0, changePct: 0 },
-  { ticker: "MEBL",   name: "Meezan Bank",                     sector: "Islamic Banking",          price: 0, change: 0, changePct: 0 },
-  { ticker: "SYS",    name: "Systems Limited",                 sector: "Technology",               price: 0, change: 0, changePct: 0 },
-  { ticker: "NESTLE", name: "Nestlé Pakistan",                 sector: "Food & Personal Care",     price: 0, change: 0, changePct: 0 },
-  { ticker: "SEARL",  name: "The Searle Company",              sector: "Pharmaceuticals",          price: 0, change: 0, changePct: 0 },
+  { ticker: "PSO",    name: "Pakistan State Oil",              sector: "Energy / OMC",  price: 0, change: 0, changePct: 0 },
+  { ticker: "OGDC",   name: "Oil & Gas Development Co.",       sector: "Energy",        price: 0, change: 0, changePct: 0 },
+  { ticker: "LUCK",   name: "Lucky Cement",                    sector: "Cement",        price: 0, change: 0, changePct: 0 },
+  { ticker: "HBL",    name: "Habib Bank Limited",              sector: "Banking",       price: 0, change: 0, changePct: 0 },
+  { ticker: "MCB",    name: "MCB Bank",                        sector: "Banking",       price: 0, change: 0, changePct: 0 },
+  { ticker: "MEBL",   name: "Meezan Bank",                     sector: "Banking",       price: 0, change: 0, changePct: 0 },
+  { ticker: "SYS",    name: "Systems Limited",                 sector: "Technology",    price: 0, change: 0, changePct: 0 },
+  { ticker: "NESTLE", name: "Nestle Pakistan",                 sector: "Food & Consumer", price: 0, change: 0, changePct: 0 },
+  { ticker: "SEARL",  name: "The Searle Company",              sector: "Pharmaceuticals", price: 0, change: 0, changePct: 0 },
 ];
 
 // Pre-baked analysis for each ticker. Realistic-ish Phase 1 numbers.
@@ -1300,15 +1302,23 @@ window.PSX_TICKER = window.PSX_COMPANIES.map(c => ({ ticker: c.ticker, price: c.
 
 window.OOGWAY_API = 'https://oogway-production-38dc.up.railway.app';
 
-// Step 1: Expand company list, THEN fetch all prices in sequence
+// Step 1: Sync company list against the backend (name/sector always win —
+// this used to only ADD unseen tickers, which left the 9 seeded above
+// permanently stuck on old labels even after the backend's data changed),
+// THEN fetch all prices in sequence
 fetch(window.OOGWAY_API + '/api/companies/')
   .then(r => r.json())
   .then(companies => {
     companies.forEach(c => {
-      if (!window.PSX_COMPANIES.find(x => x.ticker === c.ticker)) {
+      const existing = window.PSX_COMPANIES.find(x => x.ticker === c.ticker);
+      if (existing) {
+        existing.name = c.name;
+        existing.sector = c.sector;
+      } else {
         window.PSX_COMPANIES.push({ ticker: c.ticker, name: c.name, sector: c.sector, price: 0, change: 0, changePct: 0 });
       }
     });
+    window.dispatchEvent(new Event('psx-prices-updated'));
   })
   .catch(() => {})
   .finally(() => {
