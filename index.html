@@ -10,6 +10,8 @@
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
   <style>
 /* === Oogway — Swiss-minimal fintech === */
 
@@ -1275,6 +1277,21 @@ button.feature { cursor: pointer; }
   .container { max-width: 100% !important; }
 }
 
+/* === PDF export mode (class-based twin of the print rules above — html2canvas
+   captures live computed styles, not @media print, so it needs its own hook) === */
+.pdf-export-mode .no-print,
+.pdf-export-mode .no-print * { display: none !important; }
+.pdf-export-mode .analysis-shell { animation: none !important; }
+.pdf-export-mode .price-card,
+.pdf-export-mode .health-card,
+.pdf-export-mode .model,
+.pdf-export-mode .flags-col,
+.pdf-export-mode .ratio-group,
+.pdf-export-mode .piotroski-card,
+.pdf-export-mode .compare-table {
+  box-shadow: none !important;
+}
+
   </style>
 </head>
 <body>
@@ -1301,6 +1318,67 @@ window.PSX_ANALYSIS = {}
 window.PSX_TICKER = window.PSX_COMPANIES.map(c => ({ ticker: c.ticker, price: c.price, changePct: c.changePct }));
 
 window.OOGWAY_API = 'https://oogway-production-38dc.up.railway.app';
+
+// Direct-download PDF export (no native print dialog). Temporarily forces a
+// clean light color scheme + hides .no-print elements by overriding the same
+// CSS custom properties applyPalette() uses, captures the given node with
+// html2canvas, lays it into a jsPDF document, then triggers a normal file
+// download via doc.save() — a plain "Downloads" blob, not window.print().
+window.OOGWAY_PDF_PALETTE = {
+  "--bg": "#ffffff", "--bg-elev": "#f7f6f3", "--bg-deep": "#ffffff",
+  "--ink": "#17171a", "--ink-2": "#3a3a3f", "--ink-3": "#6b6b70", "--ink-4": "#9a9a9e",
+  "--rule": "#e2e0da", "--rule-2": "#d3d1c9",
+  "--accent": "#9a6a1f", "--accent-soft": "#f2e6cf",
+  "--neg": "#a8412a", "--warn": "#a8791f",
+};
+
+window.downloadReportPdf = function (node, filename) {
+  return new Promise((resolve, reject) => {
+    if (!node || typeof window.jspdf === "undefined" || typeof window.html2canvas === "undefined") {
+      reject(new Error("PDF libraries not loaded"));
+      return;
+    }
+    const root = document.documentElement;
+    const saved = {};
+    Object.keys(window.OOGWAY_PDF_PALETTE).forEach((k) => { saved[k] = root.style.getPropertyValue(k); });
+    Object.entries(window.OOGWAY_PDF_PALETTE).forEach(([k, v]) => root.style.setProperty(k, v));
+    document.body.classList.add("pdf-export-mode");
+
+    const restore = () => {
+      document.body.classList.remove("pdf-export-mode");
+      Object.entries(saved).forEach(([k, v]) => {
+        if (v) root.style.setProperty(k, v); else root.style.removeProperty(k);
+      });
+    };
+
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF("p", "pt", "a4");
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 24;
+
+      doc.html(node, {
+        x: margin,
+        y: margin,
+        width: pageWidth - margin * 2,
+        windowWidth: node.scrollWidth,
+        html2canvas: { scale: 2, backgroundColor: "#ffffff", useCORS: true },
+        callback: (doc) => {
+          restore();
+          try {
+            doc.save(filename);
+            resolve();
+          } catch (e) {
+            reject(e);
+          }
+        },
+      });
+    } catch (e) {
+      restore();
+      reject(e);
+    }
+  });
+};
 
 // Step 1: Sync company list against the backend (name/sector always win —
 // this used to only ADD unseen tickers, which left the 9 seeded above
@@ -3092,6 +3170,13 @@ function Analysis({ ticker, onBack, onPick, onNavLink, onCompare }) {
   const [loading, setLoading] = useStateA(!PSX_ANALYSIS[ticker]);
 
   const [error, setError] = useStateA(null);
+  const [pdfBusy, setPdfBusy] = useStateA(false);
+  const handleDownloadPdf = () => {
+    setPdfBusy(true);
+    window.downloadReportPdf(document.getElementById('analysis-pdf-root'), ticker + '-oogway-analysis.pdf')
+      .catch(() => window.print())
+      .finally(() => setPdfBusy(false));
+  };
 
   // ALL hooks must be declared before any conditional returns (React rules of hooks)
   useEffectA(() => {
@@ -3154,7 +3239,7 @@ function Analysis({ ticker, onBack, onPick, onNavLink, onCompare }) {
     <div className="analysis-shell">
       <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
 
-      <div className="container">
+      <div className="container" id="analysis-pdf-root">
         <div className="analysis-bar no-print">
           <div className="left">
             <button className="back" onClick={onBack}>
@@ -3167,9 +3252,9 @@ function Analysis({ ticker, onBack, onPick, onNavLink, onCompare }) {
           </div>
           <div className="left">
             <span className="api-pill"><span className="pulse" />Live</span>
-            <button className="btn btn-ghost btn-sm" onClick={() => window.print()}>
+            <button className="btn btn-ghost btn-sm" disabled={pdfBusy} onClick={handleDownloadPdf}>
               <Icon.download className="btn-arrow" style={{ width: 14, height: 14 }} />
-              Download PDF
+              {pdfBusy ? "Generating…" : "Download PDF"}
             </button>
           </div>
         </div>
@@ -3408,6 +3493,13 @@ function Compare({ tickerA, tickerB, onChangeA, onChangeB, onBack, onNavLink, on
   const [loadingB, setLoadingB] = useStateA(!PSX_ANALYSIS[tickerB]);
   const [errA, setErrA] = useStateA(null);
   const [errB, setErrB] = useStateA(null);
+  const [pdfBusy, setPdfBusy] = useStateA(false);
+  const handleDownloadPdf = () => {
+    setPdfBusy(true);
+    window.downloadReportPdf(document.getElementById('compare-pdf-root'), tickerA + '-vs-' + tickerB + '-oogway-comparison.pdf')
+      .catch(() => window.print())
+      .finally(() => setPdfBusy(false));
+  };
 
   const load = (ticker, setData, setLoading, setErr) => {
     setErr(null);
@@ -3454,8 +3546,8 @@ function Compare({ tickerA, tickerB, onChangeA, onChangeB, onBack, onNavLink, on
     <div className="analysis-shell">
       <Nav onAnalyse={onAnalyse} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
 
-      <div className="container">
-        <div className="analysis-bar">
+      <div className="container" id="compare-pdf-root">
+        <div className="analysis-bar no-print">
           <div className="left">
             <button className="back" onClick={onBack}>
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -3464,6 +3556,12 @@ function Compare({ tickerA, tickerB, onChangeA, onChangeB, onBack, onNavLink, on
               Back to home
             </button>
             <span className="crumb">Compare · {tickerA} vs {tickerB}</span>
+          </div>
+          <div className="left">
+            <button className="btn btn-ghost btn-sm" disabled={pdfBusy || !ready} onClick={handleDownloadPdf}>
+              <Icon.download className="btn-arrow" style={{ width: 14, height: 14 }} />
+              {pdfBusy ? "Generating…" : "Download PDF"}
+            </button>
           </div>
         </div>
 
