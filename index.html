@@ -350,11 +350,27 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--rule-2);
   border-radius: 12px;
   padding: 6px;
-  max-height: 280px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: 340px;
   box-shadow: 0 16px 40px -16px rgba(11,11,12,0.22);
   z-index: 5;
 }
+.dropdown-search { padding: 2px 4px 8px; }
+.dropdown-search input {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--rule-2);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+.dropdown-search input:focus { border-color: var(--ink-3); }
+.dropdown-list { overflow-y: auto; }
+.dropdown-empty { padding: 16px 12px; font-size: 13px; color: var(--ink-3); text-align: center; }
 .dropdown-item {
   display: flex; align-items: baseline; gap: 12px;
   padding: 10px 12px;
@@ -2009,13 +2025,25 @@ function Ticker() {
 /* ------- Dropdown selector (used inside hero card variant) ------- */
 function CompanyDropdown({ value, onChange }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const ref = useRef(null);
+  const inputRef = useRef(null);
   useEffect(() => {
     const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      requestAnimationFrame(() => inputRef.current && inputRef.current.focus());
+    }
+  }, [open]);
   const sel = PSX_COMPANIES.find(c => c.ticker === value) || PSX_COMPANIES[0];
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? PSX_COMPANIES.filter(c => c.ticker.toLowerCase().includes(q) || c.name.toLowerCase().includes(q))
+    : PSX_COMPANIES;
   return (
     <div className={"dropdown" + (open ? " open" : "")} ref={ref}>
       <button className="dropdown-trigger" onClick={() => setOpen(o => !o)}>
@@ -2027,13 +2055,27 @@ function CompanyDropdown({ value, onChange }) {
       </button>
       {open && (
         <div className="dropdown-menu">
-          {PSX_COMPANIES.map(c => (
-            <div key={c.ticker} className="dropdown-item" onClick={() => { onChange(c.ticker); setOpen(false); }}>
-              <span className="t">{c.ticker}</span>
-              <span className="n">{c.name}</span>
-              <span className="p">{fmtPrice(c.price)}</span>
-            </div>
-          ))}
+          <div className="dropdown-search">
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Search ticker or company…"
+              value={query}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <div className="dropdown-list">
+            {filtered.length === 0 ? (
+              <div className="dropdown-empty">No companies match &ldquo;{query}&rdquo;</div>
+            ) : filtered.map(c => (
+              <div key={c.ticker} className="dropdown-item" onClick={() => { onChange(c.ticker); setOpen(false); }}>
+                <span className="t">{c.ticker}</span>
+                <span className="n">{c.name}</span>
+                <span className="p">{c.price ? fmtPrice(c.price) : "—"}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -3310,7 +3352,7 @@ function applyPalette(name) {
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "palette": "Carbon",
-  "heroVariant": "list",
+  "heroVariant": "dropdown",
   "density": "compact",
   "heading": "Geist"
 }/*EDITMODE-END*/;
