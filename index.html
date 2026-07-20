@@ -1253,6 +1253,8 @@ button.feature { cursor: pointer; }
   letter-spacing: 0.14em; text-transform: uppercase;
 }
 
+.print-report-header { display: none; }
+
 /* === Print (PDF export) === */
 @media print {
   /* Clean, ink-friendly light theme regardless of the active palette */
@@ -1274,6 +1276,34 @@ button.feature { cursor: pointer; }
     box-shadow: none !important; border-color: var(--rule-2) !important;
   }
   .container { max-width: 100% !important; }
+
+  /* Branded report header: replaces the browser's own print header (turn off
+     "Headers and footers" in the print dialog so only this shows) */
+  .print-report-header {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 0 20px;
+  }
+  .print-report-header img { height: 30px; width: auto; display: block; }
+
+  /* Bolder headings and figures for a more legible printed report */
+  .a-section .head h3,
+  .compare-side-lab,
+  .dropdown-trigger .lf .t,
+  .health-meta .h2,
+  .model .name,
+  .health-dial .num {
+    font-weight: 700 !important;
+  }
+  .compare-table-head { font-weight: 700 !important; color: var(--ink-2) !important; }
+  .compare-table-row .val,
+  .ratio-row .vl,
+  .price-card .big .px,
+  .price-card .ohlc .val,
+  .model .v {
+    font-weight: 700 !important;
+  }
 }
 
   </style>
@@ -3151,6 +3181,7 @@ function Analysis({ ticker, onBack, onPick, onNavLink, onCompare }) {
   return (
     <div className="analysis-shell">
       <Nav onAnalyse={() => {}} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
+      <div className="print-report-header"><img src="logo-transparent.png" alt="Oogway" /></div>
 
       <div className="container">
         <div className="analysis-bar no-print">
@@ -3442,6 +3473,7 @@ function Compare({ tickerA, tickerB, onChangeA, onChangeB, onBack, onNavLink, on
   return (
     <div className="analysis-shell">
       <Nav onAnalyse={onAnalyse} onHome={onBack} onNavLink={onNavLink} onCompare={onCompare} />
+      <div className="print-report-header"><img src="logo-transparent.png" alt="Oogway" /></div>
 
       <div className="container">
         <div className="analysis-bar no-print">
