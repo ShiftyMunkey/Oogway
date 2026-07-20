@@ -2206,12 +2206,11 @@ function Hero({ selected, setSelected, onAnalyse, heroVariant }) {
         <div className="hero-statement">
           <span className="hero-eyebrow eyebrow"><span className="dot" />Live PSX intelligence</span>
           <h1>
-            Invest with <span className="accent">clarity</span>.<br/>
-            Understand every company before you buy.
+            See through the <span className="accent">numbers</span>.
           </h1>
           <p className="lede">
-            Oogway runs four established financial models against live PSX data,
-            so you see a company's health, fair value and red flags in seconds, not hours.
+            Oogway scores every company on health, value and risk using four trusted
+            financial models. Updated live, every time you check.
           </p>
           <div className="hero-cta">
             <button className="btn btn-primary btn-lg" onClick={onAnalyse}>
@@ -2377,7 +2376,7 @@ function Methodology({ onOpenArticle }) {
         <div className="section-head">
           <span className="eyebrow"><span className="dot" />Methodology</span>
           <h2>Four models,<br/>one health score.</h2>
-          <p>The composite blends Altman Z-Score, Piotroski F-Score, Graham Number positioning, and sector-relative net margin into a single 0–100 reading — the same frameworks taught in business schools, executed against the latest reported numbers.</p>
+          <p>The composite blends the Altman Z-Score, Piotroski F-Score, Graham Number and sector-relative net margin into a single 0-100 reading. These are the same models taught in finance courses and used by professional analysts. Oogway runs them against each company's latest reported numbers.</p>
         </div>
         <div className="features-grid">
           {models.map((m, i) => (
@@ -2605,12 +2604,12 @@ const LESSONS = [
     sections: [
       { h: "A brief history", p: [
         "The Pakistan Stock Exchange traces back to the Karachi Stock Exchange, founded in 1947. In January 2016, the Karachi, Lahore, and Islamabad stock exchanges merged into a single national exchange: the PSX.",
-        "That consolidation matters for you as an investor — instead of three fragmented markets with their own listings and liquidity, Pakistan now has one order book, one settlement system, and one benchmark index to watch.",
+        "That consolidation matters for you as an investor. Instead of three fragmented markets with their own listings and liquidity, Pakistan now has one order book, one settlement system, and one benchmark index to watch.",
       ]},
       { h: "How a trade actually happens", p: [
-        "All trading runs through the Karachi Automated Trading System (KATS), an electronic order-matching engine. You can't trade directly on PSX — you open an account with a licensed brokerage, fund it, and the broker routes your buy or sell order into KATS.",
-        "The exchange trades Monday to Thursday from 9:32am to 3:30pm. Friday has a split session — 9:17am to 12:00pm and 2:32pm to 4:30pm — to accommodate the Friday prayer break.",
-        "When your order fills, settlement (the actual transfer of shares and cash) happens on a T+1 basis — one business day after the trade — a standard PSX adopted in February 2026 to align with international markets.",
+        "All trading runs through the Karachi Automated Trading System (KATS), an electronic order-matching engine. You can't trade directly on PSX. You open an account with a licensed brokerage, fund it, and the broker routes your buy or sell order into KATS.",
+        "The exchange trades Monday to Thursday from 9:32am to 3:30pm. Friday has a split session, 9:17am to 12:00pm and 2:32pm to 4:30pm, to accommodate the Friday prayer break.",
+        "When your order fills, settlement (the actual transfer of shares and cash) happens on a T+1 basis, one business day after the trade. This is the standard PSX adopted in February 2026 to align with international markets. Say you buy PSO shares on a Monday. The shares and cash officially change hands on Tuesday, even though the trade itself was locked in the moment your order matched.",
       ]},
       { h: "Reading the index", p: [
         "The KSE-100 is the main benchmark: a free-float, capitalization-weighted index of the 100 largest and most liquid PSX-listed companies. When news says 'the market was up today,' this is usually the number they mean.",
@@ -2618,11 +2617,11 @@ const LESSONS = [
       ]},
       { h: "Who's actually trading", p: [
         "PSX lists over 560 companies with a combined market capitalization north of PKR 18 trillion. The investor base includes roughly 220,000 retail investors, over 400 brokerage houses, and a mix of nearly 1,900 foreign and 880 domestic institutional investors.",
-        "That's a market with real depth in its largest names, but liquidity thins out fast outside the top 100 — something worth keeping in mind before you place an order in a smaller counter.",
+        "That's a market with real depth in its largest names, but liquidity thins out fast outside the top 100. Worth keeping in mind before you place an order in a smaller counter.",
       ]},
       { h: "How you make money", p: [
-        "There are two ways a share pays you back: capital gains, when you sell for more than you paid, and dividends, a direct cash payout the company distributes from its profits.",
-        "Owning a share means owning a small, proportional slice of that company's future earnings — which is exactly why the numbers in a company's financial statements matter more than its stock price chart.",
+        "There are two ways a share pays you back: capital gains, when you sell for more than you paid, and dividends, a direct cash payout the company distributes from its profits. Say you buy one share of a company for PKR 100. A year later it trades at PKR 120 and the company paid you PKR 5 in dividends along the way. You made PKR 25 on that one share, PKR 20 from the price gain and PKR 5 from the dividend.",
+        "Owning a share means owning a small, proportional slice of that company's future earnings. That's exactly why the numbers in a company's financial statements matter more than its stock price chart.",
       ]},
     ],
     video: { title: "What it means to buy a company's stock", channel: "Khan Academy", url: "https://www.youtube.com/watch?v=98qfFzqDKR8", note: "Not PSX-specific, but it's the clearest short explanation anywhere of what owning a share actually means." },
@@ -2638,51 +2637,51 @@ const LESSONS = [
     sections: [
       { h: "The equation everything rests on", p: [
         "Every balance sheet balances around one identity: Assets = Liabilities + Equity. What a company owns (assets) is always financed by some mix of what it owes to others (liabilities) and what belongs to shareholders (equity).",
-        "That's not an accounting trick — it's a snapshot of who has a claim on the company's resources, and in what order, if things ever went wrong.",
+        "That's not an accounting trick. It's a snapshot of who has a claim on the company's resources, and in what order, if things ever went wrong.",
       ]},
       { h: "Assets: what the company owns", p: [
-        "Current assets are things that convert to cash within a year — cash itself, receivables owed by customers, inventory sitting in a warehouse. Non-current assets are the slower-moving stuff: property, plant, equipment, and long-term investments.",
+        "Current assets are things that convert to cash within a year: cash itself, receivables owed by customers, inventory sitting in a warehouse. Non-current assets are the slower-moving stuff, property, plant, equipment, and long-term investments.",
         "The split matters because current assets are what a company can lean on quickly if it needs cash, while non-current assets represent its longer-term productive capacity.",
       ]},
       { h: "Liabilities: what it owes", p: [
-        "Current liabilities are obligations due within a year — supplier payables, short-term borrowings, the current portion of long-term debt. Non-current liabilities are longer-dated: bonds, term loans, deferred obligations.",
-        "A company with far more current liabilities than current assets can be profitable on paper and still struggle to pay its bills on time.",
+        "Current liabilities are obligations due within a year: supplier payables, short-term borrowings, the current portion of long-term debt. Non-current liabilities are longer-dated, bonds, term loans, deferred obligations.",
+        "A company with far more current liabilities than current assets can be profitable on paper and still struggle to pay its bills on time. Imagine a company reporting a healthy profit for the year, but most of its cash is tied up in unpaid customer invoices while a large supplier bill is due next month. On paper it looks fine. In practice it could struggle to make payroll.",
       ]},
       { h: "Equity: what's left for shareholders", p: [
-        "Equity is the residual claim — what's left over after every liability is subtracted from every asset. It's built from paid-up capital (money shareholders originally put in) plus retained earnings (profits the company has kept rather than paid out as dividends).",
-        "This is often called 'book value,' and comparing it to a company's market price is one of the oldest tricks in value investing — it's exactly what the Graham Number does.",
+        "Equity is the residual claim, what's left over after every liability is subtracted from every asset. It's built from paid-up capital (money shareholders originally put in) plus retained earnings (profits the company has kept rather than paid out as dividends). Say a company has PKR 500 million in assets and PKR 300 million in liabilities. Its equity, the shareholders' stake, is the remaining PKR 200 million.",
+        "This is often called 'book value.' Comparing it to a company's market price is one of the oldest tricks in value investing. It's exactly what the Graham Number does.",
       ]},
       { h: "Spotting health at a glance", p: [
         "Two quick ratios go a long way: the current ratio (current assets ÷ current liabilities) tells you if a company can cover its near-term bills, and debt-to-equity tells you how leveraged it is relative to shareholder capital.",
-        "This is also exactly the raw material Oogway's Altman Z-Score and Piotroski F-Score run through — the same balance sheet lines, put through the same tests professional analysts use. Once you can read the statement yourself, the health score on any Oogway page stops being a black box.",
+        "This is also exactly the raw material Oogway's Altman Z-Score and Piotroski F-Score run through, the same balance sheet lines, put through the same tests professional analysts use. Once you can read the statement yourself, the health score on any Oogway page stops being a black box.",
       ]},
     ],
-    video: { title: "How to Read and Understand a Balance Sheet", channel: "Business Insider — Business: Explained", url: "https://www.youtube.com/watch?v=BfXhpe1XxdI", note: null },
+    video: { title: "How to Read and Understand a Balance Sheet", channel: "Business Insider · Business: Explained", url: "https://www.youtube.com/watch?v=BfXhpe1XxdI", note: null },
   },
   {
     slug: "understanding-risk",
     level: "Intermediate",
     title: "Understanding Risk",
     teaser: "What is risk appetite? How do you measure it and how do you match investments to your personal financial situation?",
-    dek: "Risk isn't something to avoid — it's something to size correctly.",
+    dek: "Risk isn't something to avoid. It's something to size correctly.",
     time: "22 min read",
     need: "Basic knowledge",
     sections: [
       { h: "Risk, risk tolerance, and risk capacity", p: [
-        "These three get used interchangeably and shouldn't be. Risk is the uncertainty in an outcome — the range of things that could happen. Risk tolerance is your emotional willingness to sit through a loss without panic-selling. Risk capacity is your financial ability to absorb a loss without derailing something you actually need the money for.",
-        "You can have high risk tolerance and low risk capacity — feel completely calm about volatility while genuinely not being able to afford a 30% drawdown right before you need the cash. Capacity should always win that argument.",
+        "These three get used interchangeably and shouldn't be. Risk is the uncertainty in an outcome, the range of things that could happen. Risk tolerance is your emotional willingness to sit through a loss without panic-selling. Risk capacity is your financial ability to absorb a loss without derailing something you actually need the money for.",
+        "You can have high risk tolerance and low risk capacity at the same time. Picture someone who feels completely calm watching their portfolio swing, but who actually needs that money for a wedding in three months. They can't afford a 30% drawdown right now, no matter how relaxed they feel about it. Capacity should always win that argument.",
       ]},
       { h: "The kinds of risk you'll meet on the PSX", p: [
-        "Market risk moves everything at once — a broad selloff drags even well-run companies down with it. Company-specific risk is isolated to one name — a bad earnings report, a management scandal. Liquidity risk shows up in thinly-traded counters, where you might struggle to exit a position at a fair price.",
-        "Currency risk is worth naming explicitly for PKR-denominated portfolios: a devaluation can quietly erode real returns even when the stock price itself is flat. And concentration risk — too much of your money in one sector, like banks or E&P — means a single sector-wide shock hits your whole portfolio at once.",
+        "Market risk moves everything at once. A broad selloff drags even well-run companies down with it. Company-specific risk is isolated to one name, a bad earnings report, a management scandal. Liquidity risk shows up in thinly-traded counters, where you might struggle to exit a position at a fair price.",
+        "Currency risk is worth naming explicitly for PKR-denominated portfolios: a devaluation can quietly erode real returns even when the stock price itself is flat. And concentration risk, too much of your money in one sector like banks or E&P, means a single sector-wide shock hits your whole portfolio at once.",
       ]},
       { h: "Matching risk to time horizon", p: [
-        "Money you need within the next year or two generally shouldn't be in equities at all — there isn't enough time to ride out a downturn. Longer horizons can absorb more volatility, simply because there's time on your side to recover before you need to cash out.",
+        "Money you need within the next year or two generally shouldn't be in equities at all. There isn't enough time to ride out a downturn. Longer horizons can absorb more volatility, simply because there's time on your side to recover before you need to cash out. Someone investing for retirement 20 years away can shrug off a bad year in the market. Someone saving for a car they plan to buy next spring can't afford the same risk.",
         "This is why 'what's your risk appetite' is really a shorthand for 'how long can this money sit untouched.'",
       ]},
       { h: "How Oogway scores risk for you", p: [
-        "The Altman Z-Score zones — Safe, Grey, Distress — are a direct read on bankruptcy risk. The Piotroski F-Score is a read on earnings quality risk: is the profit real and durable, or propped up by accounting choices.",
-        "Neither score tells you which stock will go up. What they do is help you size a position sensibly — putting less capital behind a Grey-zone company than a Safe-zone one, regardless of how good the growth story sounds.",
+        "The Altman Z-Score zones, Safe, Grey, Distress, are a direct read on bankruptcy risk. The Piotroski F-Score is a read on earnings quality risk: is the profit real and durable, or propped up by accounting choices.",
+        "Neither score tells you which stock will go up. What they do is help you size a position sensibly, putting less capital behind a Grey-zone company than a Safe-zone one, regardless of how good the growth story sounds.",
       ]},
     ],
     video: { title: "5 Questions To Ask Before Investing", channel: "Two Cents (PBS)", url: "https://www.youtube.com/watch?v=y72iyLPOv8E", note: null },
@@ -2692,24 +2691,24 @@ const LESSONS = [
     level: "Intermediate",
     title: "How to Read Stock Charts",
     teaser: "Candlesticks, moving averages, volume bars decoded step by step so you know exactly what PSX charts are telling you.",
-    dek: "Candles, averages, and volume — the three layers of every price chart.",
+    dek: "Candles, averages, and volume: the three layers of every price chart.",
     time: "25 min read",
     need: "Basic knowledge",
     diagram: "candlestick",
     sections: [
       { h: "Anatomy of a candlestick", p: [
-        "Each candlestick summarizes one trading period — a day, an hour, whatever the chart's timeframe is set to. Four numbers go into it: the open (price at the start), the close (price at the end), and the high and low (the extremes touched in between).",
-        "The thick part is the body, spanning open to close. A green (or accent-colored) body means the close was higher than the open — buyers were in control. A red body means the close was lower than the open — sellers were. The thin lines above and below the body are wicks, showing how far price stretched before pulling back.",
+        "Each candlestick summarizes one trading period: a day, an hour, whatever the chart's timeframe is set to. Four numbers go into it: the open (price at the start), the close (price at the end), and the high and low (the extremes touched in between).",
+        "The thick part is the body, spanning open to close. A green (or accent-colored) body means the close was higher than the open, so buyers were in control. A red body means the close was lower than the open, so sellers were. The thin lines above and below the body are wicks, showing how far price stretched before pulling back.",
       ]},
       { h: "Moving averages: smoothing the noise", p: [
-        "A moving average plots the average closing price over a set window — commonly 20, 50, or 200 periods — and updates it every day. It turns a jagged price line into a smoother trend.",
+        "A moving average plots the average closing price over a set window, commonly 20, 50, or 200 periods, and updates it every day. It turns a jagged price line into a smoother trend. Say a stock closed at PKR 95, 100, and 105 over the last three days. Its 3-day moving average is PKR 100, smoothing the daily noise into one trend line.",
         "Broadly, price trading above its 200-day average is read as a longer-term uptrend context; trading below is a downtrend context. Shorter averages like the 20-day react faster and are more useful for spotting near-term shifts.",
       ]},
       { h: "Volume: does the move have backing", p: [
-        "Volume bars, usually shown beneath the price chart, count how many shares changed hands in each period. A price jump on unusually high volume carries more weight than the same-size jump on thin, quiet volume — it suggests real conviction behind the move rather than a couple of small trades pushing price around.",
+        "Volume bars, usually shown beneath the price chart, count how many shares changed hands in each period. A price jump on unusually high volume carries more weight than the same-size jump on thin, quiet volume. It suggests real conviction behind the move rather than a couple of small trades pushing price around.",
       ]},
       { h: "Putting it together", p: [
-        "None of these three layers — candles, averages, volume — mean much in isolation. A green candle on collapsing volume is a weaker signal than a green candle on a volume spike. Oogway's live charts on the coverage page plot all three together so you can practice reading them against real PSX price action.",
+        "None of these three layers, candles, averages, volume, mean much in isolation. A green candle on collapsing volume is a weaker signal than a green candle on a volume spike. Oogway's live charts on the coverage page plot all three together so you can practice reading them against real PSX price action.",
       ]},
     ],
     video: { title: "The Ultimate Candlestick Patterns Trading Course", channel: "Rayner Teo", url: "https://www.youtube.com/watch?v=C3KRwfj9F8Q", note: null },
@@ -2724,23 +2723,23 @@ const LESSONS = [
     need: "Intermediate knowledge",
     sections: [
       { h: "Why diversification exists", p: [
-        "Nobody reliably predicts which single stock outperforms. Diversification doesn't try to — it accepts that some picks will disappoint and spreads capital across enough companies that no single mistake determines the outcome.",
+        "Nobody reliably predicts which single stock outperforms. Diversification doesn't try to. It accepts that some picks will disappoint and spreads capital across enough companies that no single mistake determines the outcome.",
         "This isn't about owning more for its own sake. It's about making sure being wrong about one company costs you a manageable amount, not your portfolio.",
       ]},
       { h: "Sector allocation on the PSX", p: [
-        "PSX sectors move on different cycles — commercial banks respond to interest rate policy, E&P and oil & gas to global crude prices, cement and fertilizer to construction and agricultural demand, textiles to export orders and cotton prices.",
-        "Whichever sector has been hottest recently is exactly the one worth checking your weighting in — sector momentum is easy to chase and easy to overweight without noticing.",
+        "PSX sectors move on different cycles. Commercial banks respond to interest rate policy, E&P and oil & gas to global crude prices, cement and fertilizer to construction and agricultural demand, textiles to export orders and cotton prices.",
+        "Whichever sector has been hottest recently is exactly the one worth checking your weighting in. Sector momentum is easy to chase and easy to overweight without noticing. Someone who kept adding to their bank holdings through a strong year for banking stocks might look up and find half their portfolio sitting in one sector, without ever deciding to put it there.",
       ]},
       { h: "How many stocks is enough", p: [
-        "The bulk of diversification's benefit shows up with a surprisingly modest number of holdings — most of the research on this points to somewhere in the range of 15 to 30 stocks across different sectors, after which adding more names does less and less to reduce risk.",
-        "Ben Felix's video linked below makes a sharper, more contrarian point worth sitting with: an index fund's diversification isn't automatically optimal just because it's broad — it's a starting point for thinking about portfolio construction, not the final word.",
+        "The bulk of diversification's benefit shows up with a surprisingly modest number of holdings. Most of the research on this points to somewhere in the range of 15 to 30 stocks across different sectors, after which adding more names does less and less to reduce risk.",
+        "Ben Felix's video linked below makes a sharper, more contrarian point worth sitting with: an index fund's diversification isn't automatically optimal just because it's broad. It's a starting point for thinking about portfolio construction, not the final word.",
       ]},
       { h: "Rebalancing", p: [
-        "A portfolio drifts on its own — winners grow into a bigger share of your money, losers shrink. Rebalancing means periodically trimming the winners and topping up the laggards to bring weights back to your original targets.",
-        "It's not glamorous, and it means selling some of what's been working. That's the point — it's a discipline against letting a good run turn into an accidental concentration risk.",
+        "A portfolio drifts on its own. Winners grow into a bigger share of your money, losers shrink. Rebalancing means periodically trimming the winners and topping up the laggards to bring weights back to your original targets. Say you start the year with 50% in banks and 50% in cement. A strong run in banking stocks could quietly push that to 65/35 by year end, without you buying or selling anything. Rebalancing means trimming the bank position and adding to cement to get back to your original 50/50 split.",
+        "It's not glamorous, and it means selling some of what's been working. That's the point. It's a discipline against letting a good run turn into an accidental concentration risk.",
       ]},
     ],
-    video: { title: "Are Index Funds Over-Diversified?", channel: "Ben Felix — PWL Capital", url: "https://www.youtube.com/watch?v=xfdMDGIABek", note: null },
+    video: { title: "Are Index Funds Over-Diversified?", channel: "Ben Felix · PWL Capital", url: "https://www.youtube.com/watch?v=xfdMDGIABek", note: null },
   },
   {
     slug: "micro-investment-strategies",
@@ -2752,20 +2751,20 @@ const LESSONS = [
     need: "All levels",
     sections: [
       { h: "Why 'too small to matter' is the wrong framing", p: [
-        "A fixed amount invested regularly compounds on its own schedule, regardless of how small it feels at the start. The gap between someone who starts with PKR 5,000 a month at 25 and someone who waits until they have PKR 50,000 a month to 'really start investing' at 35 is almost never made up later — time in the market does more work than the size of any single contribution.",
+        "A fixed amount invested regularly compounds on its own schedule, regardless of how small it feels at the start. The gap between someone who starts with PKR 5,000 a month at 25 and someone who waits until they have PKR 50,000 a month to 'really start investing' at 35 is almost never made up later. Time in the market does more work than the size of any single contribution.",
       ]},
       { h: "Rupee-cost averaging", p: [
-        "Investing a fixed amount on a fixed schedule — say, the same date every month — means you automatically buy more shares when prices are low and fewer when they're high, without ever having to guess which is which.",
-        "The real benefit isn't mathematical, it's psychological: it removes the pressure to time the market, which is a game even professional fund managers mostly lose.",
+        "Investing a fixed amount on a fixed schedule, say, the same date every month, means you automatically buy more shares when prices are low and fewer when they're high, without ever having to guess which is which. Say you invest PKR 5,000 every month. In a month when the stock is at PKR 50, that buys 100 shares. When it dips to PKR 40 the next month, the same PKR 5,000 buys 125 shares. You end up buying more when it's cheap without ever timing it on purpose.",
+        "The real benefit isn't mathematical, it's psychological. It removes the pressure to time the market, which is a game even professional fund managers mostly lose.",
       ]},
       { h: "What quietly eats small portfolios", p: [
         "Two things work against a small account: brokerage commissions, which take a proportionally bigger bite out of a small trade than a large one, and inflation, which erodes cash sitting idle in a savings account far faster than most people account for. The video below makes this second point better than most.",
       ]},
       { h: "A practical starting system", p: [
-        "Pick two or three companies you actually understand — or start from names scoring well on Oogway's health score — commit a fixed monthly amount you won't miss, automate the transfer so it doesn't depend on willpower, and review the portfolio quarterly rather than checking prices every day.",
+        "Pick two or three companies you actually understand, or start from names scoring well on Oogway's health score. Commit a fixed monthly amount you won't miss, automate the transfer so it doesn't depend on willpower, and review the portfolio quarterly rather than checking prices every day.",
       ]},
     ],
-    video: { title: "Something's Eating Your Money!", channel: "Two Cents (PBS)", url: "https://www.youtube.com/watch?v=uudPHdBBPO4", note: "This one's about inflation, not micro-investing directly — but it's the sharpest explanation anywhere of why leaving small amounts of cash idle costs more than people think." },
+    video: { title: "Something's Eating Your Money!", channel: "Two Cents (PBS)", url: "https://www.youtube.com/watch?v=uudPHdBBPO4", note: "This one's about inflation, not micro-investing directly, but it's the sharpest explanation anywhere of why leaving small amounts of cash idle costs more than people think." },
   },
 ];
 
@@ -2781,19 +2780,19 @@ const ALGO_ARTICLES = [
     sections: [
       { h: "The formula", p: [
         "Oogway computes the classic five-ratio Altman Z-Score: Z = 1.2·X₁ + 1.4·X₂ + 3.3·X₃ + 0.6·X₄ + 1.0·X₅.",
-        "X₁ is Working Capital ÷ Total Assets — a liquidity cushion. X₂ is Retained Earnings ÷ Total Assets — roughly a measure of accumulated, reinvested profitability over the company's life. X₃ is EBIT ÷ Total Assets — core operating profitability, before financing and tax decisions distort the picture. X₄ is Market Capitalization ÷ Total Liabilities — the market's own real-time verdict on how well equity value covers what's owed. X₅ is Revenue ÷ Total Assets — how much sales a company generates per rupee of assets it holds.",
+        "X₁ is Working Capital ÷ Total Assets, a liquidity cushion. X₂ is Retained Earnings ÷ Total Assets, roughly a measure of accumulated, reinvested profitability over the company's life. X₃ is EBIT ÷ Total Assets, the company's core operating profitability, before financing and tax decisions distort the picture. X₄ is Market Capitalization ÷ Total Liabilities, the market's own real-time verdict on how well equity value covers what's owed. X₅ is Revenue ÷ Total Assets, how much sales a company generates per rupee of assets it holds.",
       ]},
       { h: "Reading the zones", p: [
-        "A score above 2.99 lands in the Safe zone. Between 1.81 and 2.99 is the Grey zone — not distressed, but not comfortably safe either. Below 1.81 is the Distress zone, historically associated with meaningfully elevated bankruptcy risk within the following two years.",
-        "Banking companies get flagged separately on Oogway rather than forced through the same five ratios — a bank's balance sheet (mostly deposits and loans) doesn't fit the same liquidity and asset-turnover assumptions the model was built around.",
+        "A score above 2.99 lands in the Safe zone. Between 1.81 and 2.99 is the Grey zone: not distressed, but not comfortably safe either. Below 1.81 is the Distress zone, historically associated with meaningfully elevated bankruptcy risk within the following two years. Enron's Z-Score had already slipped into the Distress zone more than a year before it collapsed in 2001, a warning the market largely ignored until it was too late.",
+        "Banking companies get flagged separately on Oogway rather than forced through the same five ratios. A bank's balance sheet, mostly deposits and loans, doesn't fit the same liquidity and asset-turnover assumptions the model was built around.",
       ]},
       { h: "The honest limitations", p: [
-        "X₂ quietly penalizes young companies: a firm with only a few years of retained earnings will score lower here almost by definition, regardless of how well it's actually run today.",
-        "X₄ pulls in market capitalization, which means a stock price swing — even one driven by sentiment rather than anything operational — moves this input and can shift a company between zones without a single number on its financial statements changing.",
-        "The model itself was built in 1968 on US manufacturing companies. Applying it to a PSX-listed company means running a Pakistani balance sheet through ratios calibrated on a different economy, in a different era. Useful as one signal among several — not a verdict on its own.",
+        "X₂ quietly penalizes young companies. A firm with only a few years of retained earnings will score lower here almost by definition, regardless of how well it's actually run today.",
+        "X₄ pulls in market capitalization, which means a stock price swing can move this input on its own. Even a swing driven by sentiment, with nothing operational behind it, can shift a company between zones without a single number on its financial statements changing.",
+        "The original model was built in 1968 on US manufacturing companies. It has since been tested and applied across dozens of markets worldwide, including studies on Pakistani-listed companies, and remains one of the most widely used bankruptcy-risk frameworks today. Still, it's one signal, not a verdict on its own, which is why it's one of four models feeding into your health score rather than standing alone.",
       ]},
       { h: "Where it fits in your health score", p: [
-        "The Altman zone contributes 30 of the 100 points in Oogway's composite health score: Safe scores 30, Grey scores 15, Distress scores 0, banking companies get a flat 20, and an unscorable result (missing data) defaults to 10.",
+        "The Altman zone contributes 30 of the 100 points in Oogway's composite health score. Safe scores 30, Grey scores 15, Distress scores 0, banking companies get a flat 20, and an unscorable result from missing data defaults to 10.",
       ]},
     ],
   },
@@ -2801,20 +2800,20 @@ const ALGO_ARTICLES = [
     slug: "algo-piotroski-f-score",
     level: "Intermediate",
     title: "Piotroski F-Score",
-    dek: "A 9-point quality-of-earnings checklist — how many boxes does a company actually tick?",
+    dek: "A 9-point quality-of-earnings checklist. How many boxes does a company actually tick?",
     time: "10 min read",
     need: "Basic knowledge",
     sections: [
       { h: "The nine checks", p: [
-        "Four checks look at profitability: is return on assets (ROA) positive, is operating cash flow positive, did ROA improve from the prior year, and — importantly — is operating cash flow greater than net income. That last one flags companies whose reported profit isn't fully backed by actual cash coming in the door, a classic early warning sign of aggressive accounting.",
+        "Four checks look at profitability: is return on assets (ROA) positive, is operating cash flow positive, did ROA improve from the prior year, and is operating cash flow greater than net income. That last check matters most. It flags companies whose reported profit isn't fully backed by actual cash coming in the door, a classic early warning sign of aggressive accounting. Imagine a company reporting rising profits every quarter while its cash flow statement shows operations bleeding cash, with the difference sitting in receivables no customer has actually paid yet. This check exists specifically to catch that pattern.",
         "Three checks look at leverage and liquidity: did leverage decrease year over year, did the current ratio improve, and did the company avoid issuing new shares (no dilution of existing shareholders).",
         "Two checks look at operating efficiency: did gross margin improve, and did asset turnover improve.",
       ]},
       { h: "Scoring", p: [
-        "Each check that passes adds one point, for a maximum of 9. Oogway labels 7–9 as a Strong Buy signal, 4–6 as Neutral, and 0–3 as a Sell Signal — mirroring the original Piotroski research, which found the top and bottom bands were where the score actually predicted forward returns most reliably.",
+        "Each check that passes adds one point, for a maximum of 9. Oogway labels 7-9 as a Strong Buy signal, 4-6 as Neutral, and 0-3 as a Sell Signal. This mirrors Piotroski's original research. In his 2000 study, buying the high scorers and short-selling the low scorers returned 23% a year from 1976 to 1996, beating a simple value strategy by 7.5 percentage points annually.",
       ]},
       { h: "The honest limitations", p: [
-        "Six of the nine checks compare against a prior-year figure. For a company with limited price or financial history on Oogway, some of those checks will compute as 0 simply because there's no prior year to compare against yet — not because the company actually failed that test. A low score on a recently-added company is worth a second look before you read too much into it.",
+        "Six of the nine checks compare against a prior-year figure. For a company with limited price or financial history on Oogway, some of those checks will compute as 0 simply because there's no prior year to compare against yet, not because the company actually failed that test. A low score on a recently added company is worth a second look before you read too much into it.",
       ]},
       { h: "Where it fits in your health score", p: [
         "The Piotroski score contributes 25 of the 100 composite points, scaled linearly: (score ÷ 9) × 25.",
@@ -2830,17 +2829,17 @@ const ALGO_ARTICLES = [
     need: "Basic knowledge",
     sections: [
       { h: "The formula", p: [
-        "Graham Number = √(22.5 × EPS × Book Value Per Share). The 22.5 isn't arbitrary — it's Graham's own defensive-investor ceilings multiplied together: a maximum acceptable P/E of 15, times a maximum acceptable P/B of 1.5.",
-        "The result is a single rupee figure: roughly the most a conservative, safety-first investor should be willing to pay for the stock, given its current earnings and book value.",
+        "Graham Number = √(22.5 × EPS × Book Value Per Share). The 22.5 isn't arbitrary. It's Graham's own defensive-investor ceilings multiplied together: a maximum acceptable P/E of 15, times a maximum acceptable P/B of 1.5.",
+        "The result is a single rupee figure, roughly the most a conservative, safety-first investor should be willing to pay for the stock, given its current earnings and book value. Say a company earns PKR 20 per share and has a book value of PKR 150 per share. Its Graham Number works out to about PKR 260. If the stock is trading at PKR 200, Graham's approach reads it as undervalued. If it's trading at PKR 400, it reads as overvalued, regardless of how exciting the growth story sounds.",
       ]},
       { h: "Reading the verdict", p: [
         "Oogway compares the current market price against this number directly. Trading below the Graham Number reads as Undervalued. Trading up to about 10% above it reads as Fair value. Further above that reads as Overvalued.",
       ]},
       { h: "When it doesn't apply", p: [
-        "The formula needs both a positive EPS and a positive book value — you can't take the square root of a negative number. If a company posted a loss, or has negative equity, Oogway marks the Graham Number 'Not applicable' rather than forcing out a figure that wouldn't mean anything.",
+        "The formula needs both a positive EPS and a positive book value. You can't take the square root of a negative number. If a company posted a loss, or has negative equity, Oogway marks the Graham Number 'Not applicable' rather than forcing out a figure that wouldn't mean anything.",
       ]},
       { h: "The honest limitations", p: [
-        "This formula assumes stable, unspectacular earnings — exactly what Graham wanted for a defensive portfolio. It wasn't built for high-growth names, where today's low EPS understates tomorrow's earning power, or for cyclical businesses (oil & gas, cement, textiles) where a peak-cycle or trough-cycle EPS can swing the number wildly depending on where the sector happens to be in its cycle. Treat it as one data point, not a price target.",
+        "This formula assumes stable, unspectacular earnings, exactly what Graham wanted for a defensive portfolio. It wasn't built for high-growth names, where today's low EPS understates tomorrow's earning power. It also struggles with cyclical businesses like oil and gas, cement, and textiles. A cement company's EPS at the top of a construction boom can be several times higher than during a downturn, so its Graham Number swings wildly depending on where the sector happens to be in its cycle at the moment you check. Treat it as one data point, not a price target.",
       ]},
     ],
   },
@@ -2848,22 +2847,22 @@ const ALGO_ARTICLES = [
     slug: "algo-sector-relative-margin",
     level: "Beginner",
     title: "Sector-relative net margin",
-    dek: "How much of every rupee in revenue a company actually keeps — measured against a common bar.",
+    dek: "How much of every rupee in revenue a company actually keeps, measured against a common bar.",
     time: "7 min read",
     need: "No experience needed",
     sections: [
       { h: "What net margin means", p: [
-        "Net margin is Net Income ÷ Revenue — the percentage of every rupee of sales that survives every cost, every interest payment, and every tax bill to become actual bottom-line profit.",
+        "Net margin is Net Income ÷ Revenue. It's the percentage of every rupee of sales that survives every cost, every interest payment, and every tax bill to become actual bottom-line profit. If a company earns PKR 100 in revenue and keeps PKR 12 after everything is paid, its net margin is 12%.",
       ]},
       { h: "The current benchmark", p: [
-        "Oogway checks net margin against a flat 5% benchmark today, not yet a fully dynamic per-sector average. Above 15% reads as 'Well above sector,' 5–15% as 'Above sector,' 0–5% as 'In line,' and negative as 'Below sector.'",
-        "Worth being upfront about: a bank and a textile exporter currently get compared against the same 5% line, even though a healthy margin looks very different in those two businesses. Genuinely sector-calibrated benchmarks — comparing a company only against its own sector peers — are on the roadmap, not live yet.",
+        "Oogway checks net margin against a flat 5% benchmark today, not yet a fully dynamic per-sector average. Above 15% reads as 'Well above sector,' 5-15% as 'Above sector,' 0-5% as 'In line,' and negative as 'Below sector.'",
+        "Worth being upfront about this: a bank and a textile exporter currently get compared against the same 5% line, even though a healthy margin looks very different in those two businesses. A bank's margin often sits well above 5% given how its business model works, while a textile exporter can be perfectly healthy on a much thinner margin. Genuinely sector-calibrated benchmarks, comparing a company only against its own sector peers, are on the roadmap, not live yet.",
       ]},
       { h: "Why it's still useful", p: [
         "Even a flat bar catches the two things that matter most for a quick screen: companies that are clearly burning cash on every sale (negative margin) and companies that are clearly best-in-class at converting revenue into profit. That's most of what this check is doing for you today.",
       ]},
       { h: "Where it fits in your health score", p: [
-        "Net margin contributes up to 15 of the 100 composite points: above 15% scores the full 15, 5–15% scores 8, 0–5% scores 3, and negative margin scores 0.",
+        "Net margin contributes up to 15 of the 100 composite points: above 15% scores the full 15, 5-15% scores 8, 0-5% scores 3, and negative margin scores 0.",
       ]},
     ],
   },
@@ -2899,8 +2898,8 @@ function CandleDiagram() {
         <text x="360" y="142" textAnchor="start" className="cd-label">Open</text>
         <line x1="326" y1="138" x2="354" y2="138" stroke="var(--ink-3)" strokeWidth="1" strokeDasharray="2 2" />
       </g>
-      <text x="120" y="240" textAnchor="middle" className="cd-caption" transform="translate(0,-24)">Bearish — closed lower</text>
-      <text x="300" y="240" textAnchor="middle" className="cd-caption" transform="translate(0,-24)">Bullish — closed higher</text>
+      <text x="120" y="240" textAnchor="middle" className="cd-caption" transform="translate(0,-24)">Bearish, closed lower</text>
+      <text x="300" y="240" textAnchor="middle" className="cd-caption" transform="translate(0,-24)">Bullish, closed higher</text>
     </svg>
   );
 }
