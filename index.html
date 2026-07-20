@@ -97,6 +97,7 @@ a { color: inherit; text-decoration: none; }
   gap: 24px;
 }
 .brand { display: flex; align-items: center; gap: 10px; }
+.brand-logo { height: 26px; width: auto; display: block; }
 .brand-mark {
   width: 26px; height: 26px; border-radius: 7px;
   background: var(--ink);
@@ -2074,8 +2075,7 @@ function Nav({ onAnalyse, onHome, onNavLink, onCompare }) {
     <header className="nav no-print">
       <div className="container nav-inner">
         <button className="brand" onClick={onHome} aria-label="Home">
-          <span className="brand-mark">O</span>
-          <span className="brand-name">Oogway</span>
+          <img src="logo-white.png" alt="Oogway" className="brand-logo" />
         </button>
         <nav className="nav-links">
           <a className="nav-link" href="#how" onClick={go("how")}>How it works</a>
@@ -2473,8 +2473,7 @@ function Footer() {
     <footer className="footer no-print">
       <div className="container footer-inner">
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span className="brand-mark" style={{ width: 22, height: 22, fontSize: 11 }}>O</span>
-          <span>Oogway</span>
+          <img src="logo-white.png" alt="Oogway" style={{ height: 20, width: "auto", display: "block" }} />
           <span className="mono" style={{ marginLeft: 12 }}>v0.4</span>
         </div>
         <div className="mono">For informational purposes only. Not financial advice.</div>
