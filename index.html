@@ -1257,10 +1257,12 @@ button.feature { cursor: pointer; }
 
 /* === Print (PDF export) === */
 @media print {
-  /* Clean, ink-friendly light theme regardless of the active palette */
+  /* Clean, ink-friendly light theme regardless of the active palette.
+     Secondary/tertiary ink shades are pulled almost to black so no text
+     in the printed report reads as light grey. */
   :root {
     --bg: #ffffff; --bg-elev: #f7f6f3; --bg-deep: #ffffff;
-    --ink: #17171a; --ink-2: #3a3a3f; --ink-3: #6b6b70; --ink-4: #9a9a9e;
+    --ink: #17171a; --ink-2: #1f1f22; --ink-3: #262629; --ink-4: #303033;
     --rule: #e2e0da; --rule-2: #d3d1c9;
     --accent: #9a6a1f; --accent-soft: #f2e6cf;
     --neg: #a8412a; --warn: #a8791f;
@@ -1287,22 +1289,34 @@ button.feature { cursor: pointer; }
   }
   .print-report-header img { height: 30px; width: auto; display: block; }
 
-  /* Bolder headings and figures for a more legible printed report */
+  /* Bolder headings, labels and figures for a more legible printed report */
   .a-section .head h3,
+  .a-section .head .meta,
   .compare-side-lab,
+  .compare-vs,
   .dropdown-trigger .lf .t,
+  .dropdown-trigger .lf .n,
   .health-meta .h2,
   .model .name,
-  .health-dial .num {
+  .health-dial .num,
+  .price-card .top .lab,
+  .price-card .ohlc .lab {
     font-weight: 700 !important;
+    color: var(--ink) !important;
   }
-  .compare-table-head { font-weight: 700 !important; color: var(--ink-2) !important; }
+  .compare-table-head {
+    font-weight: 700 !important;
+    color: var(--ink) !important;
+  }
+  .compare-table-row .lab,
   .compare-table-row .val,
+  .ratio-row .nm,
   .ratio-row .vl,
   .price-card .big .px,
   .price-card .ohlc .val,
   .model .v {
     font-weight: 700 !important;
+    color: var(--ink) !important;
   }
 }
 
